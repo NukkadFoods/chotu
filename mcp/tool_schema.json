@@ -1,0 +1,208 @@
+{
+  "system_info": {
+    "platform": "macOS",
+    "shell": "zsh",
+    "python_version": "3.12",
+    "working_directory": "/Users/mahendrabahubali/chotu"
+  },
+  
+  "installed_tools": {
+    "guaranteed_available": [
+      "osascript",
+      "open", 
+      "say",
+      "screencapture",
+      "caffeinate",
+      "pmset",
+      "networksetup",
+      "diskutil",
+      "system_profiler",
+      "defaults",
+      "launchctl",
+      "killall",
+      "pkill",
+      "ps",
+      "top",
+      "lsof",
+      "curl",
+      "wget",
+      "git"
+    ],
+    
+    "may_not_be_installed": [
+      "imagesnap",
+      "ffmpeg", 
+      "youtube-dl",
+      "brew",
+      "node",
+      "npm",
+      "docker"
+    ],
+    
+    "built_in_apps": [
+      "Safari",
+      "Chrome", 
+      "Firefox",
+      "Photo Booth",
+      "QuickTime Player",
+      "Finder",
+      "Terminal",
+      "System Preferences",
+      "Activity Monitor",
+      "Calculator",
+      "Calendar",
+      "Contacts",
+      "Mail",
+      "Messages",
+      "Music",
+      "Photos",
+      "Reminders",
+      "Notes",
+      "TextEdit",
+      "Preview"
+    ]
+  },
+
+  "macos_specifics": {
+    "volume_control": {
+      "command": "osascript -e 'set volume output volume {level}'",
+      "range": "0-100",
+      "example": "osascript -e 'set volume output volume 50'"
+    },
+    
+    "brightness_control": {
+      "command": "osascript -e 'tell application \"System Events\" to tell every desktop to set brightness to {level}'",
+      "range": "0.0-1.0", 
+      "example": "osascript -e 'tell application \"System Events\" to tell every desktop to set brightness to 0.8'"
+    },
+    
+    "bluetooth_control": {
+      "enable": "sudo defaults write /Library/Preferences/com.apple.Bluetooth ControllerPowerState -int 1",
+      "disable": "sudo defaults write /Library/Preferences/com.apple.Bluetooth ControllerPowerState -int 0",
+      "status": "system_profiler SPBluetoothDataType"
+    },
+    
+    "wifi_control": {
+      "enable": "networksetup -setairportpower en0 on",
+      "disable": "networksetup -setairportpower en0 off", 
+      "status": "networksetup -getairportpower en0"
+    },
+    
+    "app_management": {
+      "open_app": "open -a '{app_name}'",
+      "close_app": "osascript -e 'tell app \"{app_name}\" to quit'",
+      "force_quit": "killall '{app_name}'"
+    },
+    
+    "file_operations": {
+      "open_folder": "open '{path}'",
+      "reveal_in_finder": "open -R '{file_path}'",
+      "create_folder": "mkdir -p '{folder_path}'",
+      "delete_to_trash": "osascript -e 'tell app \"Finder\" to delete POSIX file \"{file_path}\"'"
+    },
+    
+    "camera_photo": {
+      "preferred": "imagesnap '{filename}' (if installed)",
+      "fallback": "Photo Booth app via AppleScript",
+      "check_imagesnap": "which imagesnap >/dev/null 2>&1"
+    },
+    
+    "text_to_speech": {
+      "command": "say '{text}'",
+      "voices": "say -v ? (to list available voices)"
+    },
+    
+    "notifications": {
+      "display": "osascript -e 'display notification \"{message}\" with title \"{title}\"'"
+    }
+  },
+
+  "coding_patterns": {
+    "error_handling": {
+      "check_tool_exists": "subprocess.run(['which', 'tool_name'], capture_output=True, check=True)",
+      "graceful_fallback": "Use try/except with fallback methods",
+      "user_feedback": "Always return descriptive success/error messages"
+    },
+    
+    "subprocess_best_practices": {
+      "capture_output": "Always use capture_output=True for silent execution",
+      "text_mode": "Use text=True for string output",
+      "error_checking": "Use check=True to raise on non-zero exit",
+      "shell_safety": "Avoid shell=True, use list arguments"
+    },
+    
+    "function_design": {
+      "parameters": "Use sensible defaults, minimal required parameters",
+      "return_format": "Return descriptive strings with ✅/❌ prefixes",
+      "docstring": "Include clear purpose, args, and return description"
+    }
+  },
+
+  "security_considerations": {
+    "permissions": [
+      "Camera access requires user permission",
+      "Microphone access requires user permission", 
+      "File system access may be restricted",
+      "Network requests may be blocked"
+    ],
+    
+    "safe_practices": [
+      "Validate file paths before operations",
+      "Use absolute paths when possible",
+      "Avoid executing user input directly",
+      "Check if files/directories exist before operations"
+    ]
+  },
+
+  "common_failure_points": {
+    "imagesnap_not_installed": "Check with 'which imagesnap' first",
+    "app_not_found": "Use exact app names from /Applications",
+    "permission_denied": "Some operations need sudo or user permission",
+    "file_not_found": "Always check if paths exist",
+    "bluetooth_requires_sudo": "Bluetooth control needs elevated privileges"
+  },
+
+  "working_examples": {
+    "take_photo": {
+      "with_imagesnap": "imagesnap photo_20240808_123456.jpg",
+      "with_photo_booth": "osascript to open Photo Booth and trigger photo"
+    },
+    
+    "create_folder": {
+      "simple": "os.mkdir('folder_name')",
+      "with_parents": "os.makedirs('path/to/folder', exist_ok=True)"
+    },
+    
+    "set_volume": {
+      "command": "osascript -e 'set volume output volume 75'"
+    },
+    
+    "open_url": {
+      "command": "open 'https://example.com'"
+    }
+  },
+
+  "generation_guidelines": {
+    "always_include": [
+      "Proper imports (subprocess, os, etc.)",
+      "Error handling with try/except",
+      "Tool existence checks for optional tools",
+      "Descriptive return messages",
+      "Docstring with purpose and parameters"
+    ],
+    
+    "never_assume": [
+      "Third-party tools are installed",
+      "Commands work without checking",
+      "User input is valid",
+      "File paths exist"
+    ],
+    
+    "prefer": [
+      "Built-in macOS tools over third-party",
+      "AppleScript for GUI automation",
+      "Simple solutions over complex ones",
+      "Graceful degradation when tools missing"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+# mcp/tools/browser.py
+import subprocess
+
+def open_url(url):
+    subprocess.run(["open", url])
+
+def open_browser(url, browser="Google Chrome"):
+    try:
+        # Open specified browser with the specified URL
+        subprocess.run(["open", "-a", browser, url])
+        return "✅ Browser opened successfully"
+    except Exception as e:
+        return "❌ Error while opening browser: {}".format(str(e))

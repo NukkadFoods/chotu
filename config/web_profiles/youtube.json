@@ -1,0 +1,32 @@
+{
+    "_safety_learning_note": "Enhanced with multi-layer validation after accidental Flipkart ad click incident - Aug 2025",
+    "_validation_principles": [
+        "Only click elements with 'ytp' class (YouTube player elements)",
+        "Block all external links (href attributes)",
+        "Use forbidden pattern detection for shopping/ad keywords",
+        "Implement tab management for unwanted openings"
+    ],
+    "search_box": "//input[@name='search_query']",
+    "search_button": "//button[@id='search-icon-legacy']",
+    "video_card": "div#contents ytd-video-renderer",
+    "video_title": "a#video-title",
+    "view_count": "#metadata-line span:first-child",
+    "channel_name": "a.yt-simple-endpoint.style-scope.yt-formatted-string",
+    "subscribe_button": "#subscribe-button button",
+    "ad_skip_button": "//button[contains(text(), 'Skip') and contains(@class, 'ytp')], .ytp-ad-skip-button, .ytp-skip-ad-button",
+    "ad_indicators": ".ytp-ad-player-overlay, .ytp-ad-module, .ytp-ad-text, [class*='advertisement']",
+    "forbidden_ad_patterns": ["learn more", "shop now", "visit site", "download", "flipkart", "amazon", "myntra", "get app", "buy now", "order now", "install"],
+    "forbidden_domains": ["flipkart.com", "amazon.com", "myntra.com", "snapdeal.com"],
+    "site_patterns": {
+        "typical_flow": ["search", "browse_videos", "select_video", "auto_skip_ads"],
+        "safety_warnings": ["subscribe", "comment", "like"],
+        "ad_handling": ["detect_ads", "skip_when_available", "monitor_continuously"]
+    },
+    "element_timeouts": {
+        "search_box": 8,
+        "results": 12,
+        "video_page": 15,
+        "ad_skip_button": 3,
+        "ad_countdown": 6
+    }
+}

@@ -1,0 +1,502 @@
+==================================================
+           CHOTU AI – J.A.R.V.I.S. INSPIRED
+     Self-Learning Voice Assistant for macOS
+   Full Design + All Code Embedded (One TXT File)
+==================================================
+
+Version: 1.0
+Author: You (Creator of Chotu)
+Purpose: Build a cognitive AI agent with memory, confidence, and body (MCP)
+Platform: macOS (MacBook Pro)
+Language: Python 3.9+
+API: OpenAI (gpt-3.5-turbo)
+
+⚠️ INSTRUCTIONS:
+- Save this entire file as: CHOTU_AI_COMPLETE_PLAN.txt
+- Create the folder structure as shown.
+- Copy each section's code into its respective file.
+- Install required packages.
+- Set your OpenAI API key in config/secrets.json
+
+==================================================
+📁 PROJECT STRUCTURE
+==================================================
+
+chotu_ai/
+│
+├── chotu.py
+├── memory/
+│   ├── ram.json
+│   ├── rom.json
+│   └── memory_manager.py
+├── mcp/
+│   ├── mcp_server.py
+│   └── tools/
+│       ├── apps.py
+│       ├── files.py
+│       ├── system.py
+│       ├── browser.py
+│       └── gpt_planner.py
+├── utils/
+│   ├── voice_input.py
+│   ├── voice_output.py
+│   ├── confidence_engine.py
+│   └── gpt_interface.py
+├── config/
+│   └── secrets.json
+└── logs/
+    └── execution.log
+
+==================================================
+💾 INITIALIZE MEMORY FILES (Copy Exactly)
+==================================================
+
+File: memory/ram.json
+{
+}
+
+File: memory/rom.json
+[ ]
+
+File: config/secrets.json
+{
+  "OPENAI_API_KEY": "sk-your-actual-openai-api-key-here"
+}
+
+File: logs/execution.log
+(Leave this file empty)
+
+==================================================
+🧠 MAIN AGENT: chotu.py
+==================================================
+# chotu.py - Main AI Agent
+import json
+import time
+from utils.voice_input import listen_voice
+from utils.voice_output import speak
+from utils.confidence_engine import calculate_confidence
+from utils.gpt_interface import call_gpt
+from memory.memory_manager import load_ram, save_ram, load_rom, save_rom
+from datetime import datetime
+
+# MCP Server URL
+MCP_URL = "http://localhost:5000/execute"
+
+def main():
+    print("🟢 Chotu is now active. Say 'exit' to quit.")
+    while True:
+        # Step 1: Listen
+        user_input = listen_voice()
+        if not user_input:
+            continue
+        if user_input.lower() == "exit":
+            speak("Shutting down Chotu.")
+            break
+
+        # Reset RAM
+        ram = {
+            "raw_input": user_input,
+            "timestamp": datetime.now().isoformat()
+        }
+        save_ram(ram)
+
+        # Step 2: Confidence Check
+        confidence = calculate_confidence(user_input)
+        print(f"📊 Confidence: {confidence}%")
+
+        # Step 3: Handle Based on Confidence
+        if confidence >= 90:
+            print("✅ High confidence. Sending directly to MCP.")
+            ram["confidence"] = confidence
+            ram["interpreted_intent"] = get_intent_from_rom(user_input)
+            save_ram(ram)
+            send_to_mcp(ram)
+
+        elif confidence >= 30:
+            print("🤔 Medium confidence. Using GPT + ROM to clarify.")
+            rom_context = search_rom_similar(user_input)
+            gpt_prompt = f"""
+            Interpret this command: '{user_input}'
+            Past context from ROM: {rom_context}
+            Respond in JSON:
+            {{
+                "understood_intent": "Open project and run server",
+                "confidence": 95,
+                "tools_needed": ["files.open", "terminal.run"],
+                "security_notes": "User has done this before"
+            }}
+            """
+            try:
+                gpt_response = call_gpt(gpt_prompt)
+                gpt_json = json.loads(gpt_response)
+                ram.update(gpt_json)
+                save_ram(ram)
+                if ram["confidence"] >= 89:
+                    send_to_mcp(ram)
+                else:
+                    speak("I'm not sure. Can you rephrase?")
+            except:
+                speak("I couldn't understand that.")
+
+        else:
+            speak("I didn't catch that. Please repeat clearly.")
+
+def get_intent_from_rom(command):
+    rom = load_rom()
+    for entry in rom:
+        if "input_pattern" in entry and entry["input_pattern"].lower() in command.lower():
+            return entry["intent"]
+    return command
+
+def search_rom_similar(command):
+    rom = load_rom()
+    matches = []
+    for entry in rom:
+        if "input_pattern" in entry and command.lower() in entry["input_pattern"].lower():
+            matches.append(entry)
+    return str(matches[:3])
+
+def send_to_mcp(ram_data):
+    import requests
+    try:
+        res = requests.post(MCP_URL, json=ram_data)
+        result = res.json().get("output", "Task done.")
+        speak(result)
+        # Learn from success
+        learn_from_success(ram_data)
+    except Exception as e:
+        speak("Failed to execute task.")
+        print(f"❌ MCP Error: {e}")
+
+def learn_from_success(ram):
+    rom = load_rom()
+    if any(r.get("raw_input") == ram["raw_input"] for r in rom):
+        return  # Already learned
+
+    prompt = f"""
+    Create a ROM entry for this successful command:
+    Raw: {ram['raw_input']}
+    Intent: {ram.get('interpreted_intent', 'Unknown')}
+    Tools: {ram.get('tools_needed', [])}
+    Return JSON:
+    {{
+        "input_pattern": "{ram['raw_input'].lower()}",
+        "intent": "{ram.get('interpreted_intent', 'run command')}",
+        "action_flow": ["learned via MCP"],
+        "confidence_boost": 100,
+        "security_profile": "trusted"
+    }}
+    """
+    try:
+        response = call_gpt(prompt)
+        new_entry = json.loads(response)
+        rom.append(new_entry)
+        save_rom(rom)
+        print("📘 New experience saved to ROM.")
+    except:
+        print("⚠️  Failed to learn from task.")
+
+if __name__ == "__main__":
+    main()
+
+==================================================
+💾 MEMORY MANAGER: memory/memory_manager.py
+==================================================
+# memory/memory_manager.py
+import json
+
+def load_ram():
+    try:
+        with open("memory/ram.json", "r") as f:
+            return json.load(f)
+    except:
+        return {}
+
+def save_ram(data):
+    with open("memory/ram.json", "w") as f:
+        json.dump(data, f, indent=2)
+
+def load_rom():
+    try:
+        with open("memory/rom.json", "r") as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_rom(data):
+    with open("memory/rom.json", "w") as f:
+        json.dump(data, f, indent=2)
+
+==================================================
+🎙️ VOICE INPUT: utils/voice_input.py
+==================================================
+# utils/voice_input.py
+import speech_recognition as sr
+
+def listen_voice() -> str:
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("👂 Chotu is listening...")
+        r.adjust_for_ambient_noise(source)
+        audio = r.listen(source)
+    
+    try:
+        text = r.recognize_google(audio)
+        print(f"🎙️ Heard: {text}")
+        return text
+    except sr.UnknownValueError:
+        print("❌ Could not understand audio.")
+        return ""
+    except sr.RequestError:
+        print("⚠️  Speech recognition service down.")
+        return ""
+
+==================================================
+🔊 VOICE OUTPUT: utils/voice_output.py
+==================================================
+# utils/voice_output.py
+import subprocess
+import platform
+
+def speak(text: str):
+    print(f"🤖 Chotu: {text}")
+    if platform.system() == "Darwin":  # macOS
+        subprocess.run(["say", text])
+    else:
+        print(f"[TTS] {text}")
+
+==================================================
+🧠 CONFIDENCE ENGINE: utils/confidence_engine.py
+==================================================
+# utils/confidence_engine.py
+import difflib
+from memory.memory_manager import load_rom
+
+def calculate_confidence(user_input: str) -> int:
+    rom = load_rom()
+    patterns = []
+    for entry in rom:
+        if "input_pattern" in entry:
+            patterns.append(entry["input_pattern"].lower())
+    
+    if not patterns:
+        return 30  # No past data → low confidence
+    
+    matches = difflib.get_close_matches(user_input.lower(), patterns, n=1, cutoff=0.4)
+    
+    if matches:
+        similarity = difflib.SequenceMatcher(None, user_input.lower(), matches[0]).ratio()
+        return int(similarity * 100)
+    return 30
+
+==================================================
+🧠 GPT INTERFACE: utils/gpt_interface.py
+==================================================
+# utils/gpt_interface.py
+import openai
+import json
+
+# Load API key
+try:
+    with open("config/secrets.json") as f:
+        secrets = json.load(f)
+    openai.api_key = secrets["OPENAI_API_KEY"]
+except Exception as e:
+    print("❌ Failed to load OpenAI API key:", e)
+    openai.api_key = ""
+
+def call_gpt(prompt: str) -> str:
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=300
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"ERROR: {str(e)}"
+
+==================================================
+🖥️ MCP SERVER: mcp/mcp_server.py
+==================================================
+# mcp/mcp_server.py
+from flask import Flask, request, jsonify
+import subprocess
+import os
+from tools.apps import open_app, close_app
+from tools.files import open_folder
+from tools.browser import open_url
+from tools.system import set_volume, set_brightness
+from tools.gpt_planner import generate_and_run
+
+app = Flask(__name__)
+
+@app.route('/execute', methods=['POST'])
+def execute_task():
+    ram = request.json
+    intent = ram.get("interpreted_intent", "").lower()
+    
+    try:
+        if "open safari" in intent or "browse" in intent:
+            open_url("https://www.google.com")
+        elif "open code" in intent or "vs code" in intent:
+            open_app("Visual Studio Code")
+        elif "open folder" in intent or "project" in intent:
+            open_folder("/Users/yourname/Documents")
+        elif "volume up" in intent:
+            set_volume(80)
+        elif "volume down" in intent:
+            set_volume(30)
+        elif "brightness up" in intent:
+            set_brightness(100)
+        elif "brightness down" in intent:
+            set_brightness(50)
+        else:
+            # Unknown task → use GPT to figure out
+            result = generate_and_run(intent)
+            return jsonify({"output": result})
+            
+        return jsonify({"output": f"Task completed: {intent}"})
+    except Exception as e:
+        return jsonify({"output": f"Failed: {str(e)}"})
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
+
+==================================================
+🔧 MCP TOOL: mcp/tools/apps.py
+==================================================
+# mcp/tools/apps.py
+import subprocess
+
+def open_app(name):
+    subprocess.run(["open", "-a", name])
+
+def close_app(name):
+    subprocess.run(["osascript", "-e", f'tell app "{name}" to quit'])
+
+==================================================
+🔧 MCP TOOL: mcp/tools/files.py
+==================================================
+# mcp/tools/files.py
+import subprocess
+import os
+
+def open_folder(path):
+    if os.path.exists(path):
+        subprocess.run(["open", path])
+    else:
+        print(f"Path not found: {path}")
+
+==================================================
+🔧 MCP TOOL: mcp/tools/browser.py
+==================================================
+# mcp/tools/browser.py
+import subprocess
+
+def open_url(url):
+    subprocess.run(["open", url])
+
+==================================================
+🔧 MCP TOOL: mcp/tools/system.py
+==================================================
+# mcp/tools/system.py
+import subprocess
+
+def set_volume(level):
+    subprocess.run(["osascript", "-e", f"set volume output volume {level}"])
+
+def set_brightness(level):
+    subprocess.run(["osascript", "-e", f"tell application \"System Events\" to tell every desktop to set brightness to {level/100}"])
+
+==================================================
+🧠 MCP LEARNING TOOL: mcp/tools/gpt_planner.py
+==================================================
+# mcp/tools/gpt_planner.py
+from utils.gpt_interface import call_gpt
+import subprocess
+
+def generate_and_run(intent: str) -> str:
+    prompt = f"""
+    Generate a macOS terminal or AppleScript command to achieve:
+    '{intent}'
+    Only return the command, nothing else.
+    Example: open -a Safari
+    """
+    cmd = call_gpt(prompt)
+    if "ERROR" not in cmd:
+        try:
+            subprocess.run(cmd.split(), capture_output=True)
+            return f"Executed via GPT: {cmd}"
+        except:
+            return f"GPT suggested: {cmd}, but failed to run."
+    return "Could not determine action."
+
+==================================================
+🔐 SECURITY NOTES
+==================================================
+- Always log every action in logs/execution.log
+- Never run shell commands without validation
+- Confirm destructive actions (delete, shutdown)
+- Store API keys in secrets.json and add to .gitignore
+- Use subprocess safely — avoid shell=True
+- In production, sandbox GPT-generated scripts
+
+==================================================
+🚀 HOW TO RUN
+==================================================
+Step 1: Install Required Packages
+Open Terminal and run:
+pip install flask speechrecognition pyaudio openai pyttsx3
+
+Step 2: Create Folder Structure
+Make all folders and files as shown.
+
+Step 3: Add Your OpenAI Key
+Replace 'sk-your-actual-openai-api-key-here' in secrets.json
+
+Step 4: Start MCP Server
+Open a terminal, go to project folder, run:
+python mcp/mcp_server.py
+
+Step 5: Run Chotu Agent
+In another terminal, run:
+python chotu.py
+
+Step 6: Speak Commands
+Try:
+- "Open Safari"
+- "Turn up volume"
+- "Open my code editor"
+- "Play music"
+
+Chotu will learn from every success and get faster over time.
+
+==================================================
+💡 FUTURE UPGRADES
+==================================================
+- Add vector database (Chroma) for smarter ROM search
+- Enable voice recognition for multiple users
+- Add calendar, email, reminders
+- Build a web dashboard to see Chotu's thoughts
+- Connect to smart home devices (HomeKit)
+- Add offline whisper for local speech-to-text
+
+==================================================
+🎯 FINAL WORD
+==================================================
+You are not just coding an assistant.
+
+You are building a mind.
+
+One that hears.
+One that thinks.
+One that remembers.
+One that learns.
+
+Chotu starts small.
+But every command makes him wiser.
+
+Welcome to the age of personal AI.
+
+— Built by You

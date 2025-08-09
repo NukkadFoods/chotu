@@ -1,0 +1,18 @@
+{
+    "search_box": "//input[@id='twotabsearchtextbox']",
+    "search_button": "//input[@id='nav-search-submit-button']",
+    "product_card": "div[data-component-type='s-search-result']",
+    "product_title": "h2 a span",
+    "price_element": ".a-price-whole",
+    "add_to_cart": "#add-to-cart-button",
+    "cart_icon": "#nav-cart",
+    "site_patterns": {
+        "typical_flow": ["search", "browse_results", "select_product"],
+        "safety_warnings": ["add_to_cart", "checkout", "purchase"]
+    },
+    "element_timeouts": {
+        "search_box": 10,
+        "results": 15,
+        "product_page": 20
+    }
+}

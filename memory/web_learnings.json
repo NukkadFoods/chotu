@@ -1,0 +1,53 @@
+{
+  "successful_flows": [
+    {
+      "timestamp": "2025-08-09T23:16:18.641117",
+      "site": "youtube.com",
+      "action": "video_search_and_play",
+      "tool_used": "chotu_youtube_player.py",
+      "command_pattern": "search and play * on YouTube",
+      "success": true,
+      "safety_measures": "ad_skipping_with_validation"
+    }
+  ],
+  "failed_attempts": [],
+  "site_patterns": {
+    "youtube.com": {
+      "automation_available": true,
+      "tool": "chotu_youtube_player.py",
+      "function": "selenium_youtube_automation",
+      "command_patterns": [
+        "play * on youtube",
+        "search * on youtube",
+        "open youtube and play *",
+        "open chrome and search youtube",
+        "play bollywood music on youtube",
+        "search and play * on youtube",
+        "youtube search *",
+        "find * on youtube"
+      ],
+      "success_rate": 100,
+      "last_used": "2025-08-09T23:16:18.641100",
+      "safety_enabled": true
+    }
+  },
+  "learned_selectors": {},
+  "user_preferences": {
+    "preferred_search_engine": "google",
+    "default_timeout": 10,
+    "enable_images": true,
+    "enable_javascript": true
+  },
+  "performance_metrics": {
+    "average_task_time": 0,
+    "success_rate": 0,
+    "total_tasks": 0,
+    "youtube_automation": {
+      "total_uses": 1,
+      "success_rate": 100,
+      "average_time": 15,
+      "last_success": "2025-08-09T23:16:18.641121"
+    }
+  },
+  "last_updated": "2025-08-09T08:00:00Z"
+}

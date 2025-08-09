@@ -1,0 +1,32 @@
+# Security - Never commit secrets
+config/secrets.json
+.env
+
+# Logs and temporary files
+logs/*.log
+*.log
+
+# Memory files (may contain personal data)
+memory/ram.json
+memory/rom.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride

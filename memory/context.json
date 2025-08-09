@@ -1,0 +1,111 @@
+{
+  "preferences": {},
+  "session_history": [
+    {
+      "timestamp": "2025-08-08T23:33:32.207758",
+      "user_input": "can you enable Bluetooth",
+      "chotu_response": "\u2705 Bluetooth enabled",
+      "success": true,
+      "session_id": 29
+    },
+    {
+      "timestamp": "2025-08-08T23:33:57.800568",
+      "user_input": "can you open Google Chrome",
+      "chotu_response": "\u2705 Successfully opened Google Chrome",
+      "success": true,
+      "session_id": 30
+    },
+    {
+      "timestamp": "2025-08-08T23:34:15.077836",
+      "user_input": "open FaceTime",
+      "chotu_response": "\u2705 Successfully opened FaceTime",
+      "success": true,
+      "session_id": 31
+    },
+    {
+      "timestamp": "2025-08-08T23:34:38.762529",
+      "user_input": "can you increase brightness to 90%",
+      "chotu_response": "\u2705 Brightness increased to 55%",
+      "success": true,
+      "session_id": 32
+    },
+    {
+      "timestamp": "2025-08-08T23:40:45.848263",
+      "user_input": "Set brightness to 90%",
+      "chotu_response": "\u2705 Brightness increased to 94%",
+      "success": true,
+      "session_id": 33
+    },
+    {
+      "timestamp": "2025-08-08T23:41:41.302609",
+      "user_input": "set to 70%",
+      "chotu_response": "\u2705 Executed: adjust percentage to 70%",
+      "success": true,
+      "session_id": 34
+    },
+    {
+      "timestamp": "2025-08-08T23:45:29.688508",
+      "user_input": "set to 60%",
+      "chotu_response": "\u2705 Brightness set to 60% successfully!",
+      "success": true,
+      "session_id": 35
+    },
+    {
+      "timestamp": "2025-08-08T23:45:46.280023",
+      "user_input": "open settings",
+      "chotu_response": "\u2705 Executed: Open the settings menu.",
+      "success": true,
+      "session_id": 36
+    },
+    {
+      "timestamp": "2025-08-08T23:50:31.164110",
+      "user_input": "can you tell me enable bluetooth devices",
+      "chotu_response": "\u2705 Bluetooth enabled",
+      "success": true,
+      "session_id": 37
+    },
+    {
+      "timestamp": "2025-08-08T23:50:42.873345",
+      "user_input": "I said give me bluetooth devices not enable",
+      "chotu_response": "\u2705 Bluetooth enabled",
+      "success": true,
+      "session_id": 38
+    },
+    {
+      "timestamp": "2025-08-09T01:32:12.910835",
+      "user_input": "disable Bluetooth",
+      "chotu_response": "Cannot connect to MCP server. Please start it first.",
+      "success": true,
+      "session_id": 39
+    },
+    {
+      "timestamp": "2025-08-09T01:43:30.797429",
+      "user_input": "disable Bluetooth",
+      "chotu_response": "\u274c Bluetooth error: cannot import name 'toggle_bluetooth' from 'tools.system' (/Users/mahendrabahubali/chotu/mcp/tools/system.py)",
+      "success": true,
+      "session_id": 40
+    },
+    {
+      "timestamp": "2025-08-09T23:11:12.452773",
+      "user_input": "Open Chrome and search YouTube",
+      "chotu_response": "\u274c Error opening Chrome and search for YouTube: Command '['open', '-a', 'Chrome and search for YouTube']' returned non-zero exit status 1.",
+      "success": true,
+      "session_id": 12
+    },
+    {
+      "timestamp": "2025-08-09T23:13:17.277851",
+      "user_input": "open Chrome",
+      "chotu_response": "Cannot connect to MCP server. Please start it first.",
+      "success": true,
+      "session_id": 13
+    },
+    {
+      "timestamp": "2025-08-09T23:13:46.235664",
+      "user_input": "start the MCP server",
+      "chotu_response": "Cannot connect to MCP server. Please start it first.",
+      "success": true,
+      "session_id": 14
+    }
+  ],
+  "last_updated": "2025-08-09T23:13:46.235724"
+}

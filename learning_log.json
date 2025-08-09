@@ -1,0 +1,124 @@
+{
+  "learned_tools": [
+    {
+      "timestamp": "2025-08-08T06:35:19.274028",
+      "original_request": "create a folder called TestFolder",
+      "tool_generated": "create_folder",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/create_folder.py",
+      "capability_added": "The capability to create a folder is missing",
+      "category": "file"
+    },
+    {
+      "timestamp": "2025-08-08T06:36:35.567146",
+      "original_request": "take a photo with the camera",
+      "tool_generated": "take_photo",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/take_photo.py",
+      "capability_added": "Taking a photo with the camera",
+      "category": "system"
+    },
+    {
+      "timestamp": "2025-08-08T06:43:10.001943",
+      "original_request": "",
+      "tool_generated": "text_to_speech",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/text_to_speech.py",
+      "capability_added": "text-to-speech functionality",
+      "category": "system"
+    },
+    {
+      "timestamp": "2025-08-08T06:43:59.975720",
+      "original_request": "",
+      "tool_generated": "send_email",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/send_email.py",
+      "capability_added": "ability to send emails",
+      "category": "communication"
+    },
+    {
+      "timestamp": "2025-08-08T06:47:41.256664",
+      "original_request": "",
+      "tool_generated": "text_summarizer",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/text_summarizer.py",
+      "capability_added": "text summarization",
+      "category": "system"
+    },
+    {
+      "timestamp": "2025-08-08T06:49:08.290122",
+      "original_request": "",
+      "tool_generated": "play_music",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/play_music.py",
+      "capability_added": "ability to play music",
+      "category": "system"
+    },
+    {
+      "timestamp": "2025-08-08T07:27:23.837483",
+      "original_request": "",
+      "tool_generated": "voice_recognition",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/voice_recognition.py",
+      "capability_added": "voice recognition for user commands",
+      "category": "system"
+    },
+    {
+      "timestamp": "2025-08-08T07:27:51.784821",
+      "original_request": "",
+      "tool_generated": "translate_text",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/translate_text.py",
+      "capability_added": "translate_text",
+      "category": "communication"
+    },
+    {
+      "timestamp": "2025-08-08T07:33:33.491061",
+      "original_request": "",
+      "tool_generated": "voice_recognition",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/voice_recognition.py",
+      "capability_added": "voice recognition",
+      "category": "system"
+    },
+    {
+      "timestamp": "2025-08-08T07:34:40.260779",
+      "original_request": "",
+      "tool_generated": "voice_command_recognition",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/voice_command_recognition.py",
+      "capability_added": "voice recognition for specific voice commands",
+      "category": "system"
+    },
+    {
+      "timestamp": "2025-08-08T07:41:36.813186",
+      "original_request": "open new application",
+      "tool_generated": "open_application",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/open_application.py",
+      "capability_added": "open new application",
+      "category": "app"
+    },
+    {
+      "timestamp": "2025-08-08T07:42:05.101864",
+      "original_request": "show system notification",
+      "tool_generated": "show_system_notification",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/show_system_notification.py",
+      "capability_added": "The ability to show system notifications",
+      "category": "system"
+    },
+    {
+      "timestamp": "2025-08-08T18:30:12.765073",
+      "original_request": "\"turn on device or appliance\"",
+      "tool_generated": "turn_on_device",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/turn_on_device.py",
+      "capability_added": "The ability to turn on a device or appliance",
+      "category": "system"
+    },
+    {
+      "timestamp": "2025-08-08T18:30:33.244457",
+      "original_request": "\"generate random text\"",
+      "tool_generated": "generate_random_text",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/generate_random_text.py",
+      "capability_added": "random text generation",
+      "category": "text"
+    },
+    {
+      "timestamp": "2025-08-08T18:31:11.947776",
+      "original_request": "\"execute command xyz\"",
+      "tool_generated": "execute_custom_command",
+      "tool_file": "/Users/mahendrabahubali/chotu/mcp/tools/execute_custom_command.py",
+      "capability_added": "Execute a custom command",
+      "category": "system"
+    }
+  ]
+}

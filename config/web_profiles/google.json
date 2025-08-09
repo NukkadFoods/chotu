@@ -1,0 +1,18 @@
+{
+    "search_box": "//input[@name='q']",
+    "search_button": "//input[@value='Google Search']",
+    "results_container": "#search",
+    "result_title": "h3",
+    "result_link": "a",
+    "images_tab": "//a[contains(text(), 'Images')]",
+    "news_tab": "//a[contains(text(), 'News')]",
+    "site_patterns": {
+        "typical_flow": ["search", "browse_results", "click_result"],
+        "safety_warnings": []
+    },
+    "element_timeouts": {
+        "search_box": 5,
+        "results": 8,
+        "result_page": 10
+    }
+}
