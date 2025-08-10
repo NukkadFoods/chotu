@@ -537,10 +537,21 @@ def execute_task():
 def try_existing_capabilities(intent, nlp_analysis):
     """Try to execute with existing capabilities"""
     try:
-        # YouTube Automation - Check memory first
+        # YouTube Automation - Check memory first (more specific matching)
         if any(keyword in intent.lower() for keyword in ["youtube", "video", "play", "music", "song"]) or \
-           ("chrome" in intent.lower() and "search" in intent.lower()):
+           ("youtube" in intent.lower() and "search" in intent.lower()) or \
+           ("play" in intent.lower() and any(media in intent.lower() for media in ["music", "song", "video"])):
             return handle_youtube_automation_command(intent)
+        
+        # Web Browser + Search Commands (Chrome, Safari, Firefox + search query)
+        elif (any(browser in intent.lower() for browser in ["chrome", "safari", "firefox"]) and 
+              "search" in intent.lower() and 
+              not any(media in intent.lower() for media in ["youtube", "video", "music", "song"])):
+            return handle_web_browser_search_command(intent)
+        
+        # Context-aware follow-up commands
+        elif any(phrase in intent.lower() for phrase in ["first link", "top result", "click first", "open first"]):
+            return handle_contextual_followup_command(intent)
         
         # System Control
         if "volume" in intent.lower():
@@ -877,6 +888,287 @@ def handle_app_command(intent):
     except Exception as e:
         return f"❌ App opening error: {e}"
 
+def handle_web_browser_search_command(intent):
+    """Handle web browser search commands like 'open Chrome and search Amazon'"""
+    try:
+        import re
+        import subprocess
+        import urllib.parse
+        import time
+        
+        print(f"🌐 Web browser search triggered for: '{intent}'")
+        
+        # Store last search context for follow-up commands
+        global last_search_context
+        if 'last_search_context' not in globals():
+            last_search_context = {}
+        
+        # Extract browser name
+        browser_map = {
+            'chrome': 'Google Chrome',
+            'safari': 'Safari', 
+            'firefox': 'Firefox'
+        }
+        
+        browser = None
+        intent_lower = intent.lower()
+        for browser_key, browser_name in browser_map.items():
+            if browser_key in intent_lower:
+                browser = browser_name
+                break
+        
+        if not browser:
+            browser = 'Google Chrome'  # Default
+        
+        # Extract search query
+        search_patterns = [
+            r'search\s+(.+?)(?:\s+on|\s+in|\s+with|$)',  # "search Amazon on..."
+            r'(?:open|launch)\s+\w+\s+and\s+search\s+(.+)',  # "open Chrome and search Amazon"
+            r'(?:google|search\s+for)\s+(.+)',  # "google Amazon"
+        ]
+        
+        search_query = None
+        for pattern in search_patterns:
+            match = re.search(pattern, intent_lower)
+            if match:
+                search_query = match.group(1).strip()
+                break
+        
+        if not search_query:
+            # Extract everything after "search"
+            if "search" in intent_lower:
+                parts = intent_lower.split("search", 1)
+                if len(parts) > 1:
+                    search_query = parts[1].strip()
+                    # Clean up common words
+                    search_query = re.sub(r'^(for|on|in|with)\s+', '', search_query)
+        
+        if not search_query:
+            return f"❌ Could not extract search query from: {intent}"
+        
+        print(f"🔍 Browser: {browser}, Query: '{search_query}'")
+        
+        # Create Google search URL
+        encoded_query = urllib.parse.quote(search_query)
+        search_url = f"https://www.google.com/search?q={encoded_query}"
+        
+        # Store context for follow-up commands
+        last_search_context = {
+            'type': 'web_search',
+            'browser': browser,
+            'query': search_query,
+            'search_url': search_url,
+            'timestamp': time.time()
+        }
+        
+        # Open browser with search URL using WebDriver for automation compatibility
+        try:
+            # Import the web automation coordinator for WebDriver-based opening
+            import importlib.util
+            import os
+            
+            # Get the path to the web automation coordinator
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            coordinator_path = os.path.join(current_dir, 'tools', 'web_automation', 'coordinator.py')
+            
+            if os.path.exists(coordinator_path) and browser == 'Google Chrome':
+                # Use WebDriver Chrome for automated browsing
+                print("🤖 Using WebDriver Chrome for automation compatibility...")
+                
+                # Load the module dynamically
+                spec = importlib.util.spec_from_file_location("coordinator", coordinator_path)
+                coordinator_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(coordinator_module)
+                
+                # Get the coordinator class
+                WebAutomationCoordinator = coordinator_module.WebAutomationCoordinator
+                
+                # Create coordinator instance with visible browser (not headless)
+                coordinator = WebAutomationCoordinator(headless=False)
+                coordinator._ensure_browser_ready()
+                
+                if coordinator.commander and coordinator.commander.driver:
+                    # Navigate to the search URL
+                    coordinator.commander.driver.get(search_url)
+                    print(f"🔍 WebDriver Chrome opened with search: '{search_query}'")
+                    
+                    # Store the coordinator instance for later use
+                    last_search_context['webdriver_coordinator'] = coordinator
+                    
+                    return f"✅ Opened automated Chrome and searched for '{search_query}'"
+                else:
+                    raise Exception("Failed to initialize WebDriver Chrome")
+            else:
+                # Fallback to regular browser opening for Safari/Firefox or if WebDriver not available
+                if browser == 'Safari':
+                    result = subprocess.run(['open', '-a', 'Safari', search_url], capture_output=True, text=True)
+                elif browser == 'Firefox':
+                    result = subprocess.run(['open', '-a', 'Firefox', search_url], capture_output=True, text=True)
+                else:  # Chrome fallback
+                    result = subprocess.run(['open', '-a', 'Google Chrome', search_url], capture_output=True, text=True)
+                
+                if result.returncode == 0:
+                    return f"✅ Opened {browser} and searched for '{search_query}'"
+                else:
+                    return f"❌ Failed to open {browser}: {result.stderr}"
+                    
+        except Exception as e:
+            print(f"⚠️ WebDriver opening failed: {e}")
+            # Fallback to regular Chrome
+            result = subprocess.run(['open', '-a', 'Google Chrome', search_url], capture_output=True, text=True)
+            if result.returncode == 0:
+                return f"✅ Opened {browser} and searched for '{search_query}' (fallback)"
+            else:
+                return f"❌ Failed to open {browser}: {result.stderr}"
+            
+    except Exception as e:
+        return f"❌ Web browser search error: {e}"
+
+def handle_contextual_followup_command(intent):
+    """Handle context-aware follow-up commands like 'open first link'"""
+    try:
+        import time
+        
+        print(f"🔗 Contextual follow-up triggered for: '{intent}'")
+        
+        # Check if we have recent search context
+        global last_search_context
+        if 'last_search_context' not in globals() or not last_search_context:
+            return "❌ No recent search context found. Please search for something first."
+        
+        # Check if context is recent (within 5 minutes)
+        current_time = time.time()
+        if current_time - last_search_context.get('timestamp', 0) > 300:  # 5 minutes
+            return "❌ Search context too old. Please perform a new search first."
+        
+        # For now, let's trigger autonomous learning for this capability
+        print("🧠 Triggering autonomous learning for web interaction...")
+        
+        # Try to use existing web automation tools with WebDriver
+        try:
+            # Check if we have a stored WebDriver coordinator from the previous search
+            if last_search_context.get('webdriver_coordinator'):
+                print("🤖 Using existing WebDriver session for context-aware clicking...")
+                coordinator = last_search_context['webdriver_coordinator']
+                search_query = last_search_context.get('query', 'unknown')
+                
+                # Use the direct click first search result method
+                result = coordinator.click_first_search_result(search_query)
+                
+                if result.get('success'):
+                    return f"✅ {result.get('message', 'Successfully clicked first search result using WebDriver')}"
+                else:
+                    print("🔄 WebDriver click failed, trying keyboard navigation fallback...")
+                    # Fall through to keyboard navigation fallback
+            
+            # If no existing WebDriver session, create a new one
+            # Import the web automation coordinator that uses WebDriver
+            import importlib.util
+            import os
+            
+            # Get the path to the web automation coordinator
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            coordinator_path = os.path.join(current_dir, 'tools', 'web_automation', 'coordinator.py')
+            
+            if os.path.exists(coordinator_path):
+                # Load the module dynamically
+                spec = importlib.util.spec_from_file_location("coordinator", coordinator_path)
+                coordinator_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(coordinator_module)
+                
+                # Get the coordinator class
+                WebAutomationCoordinator = coordinator_module.WebAutomationCoordinator
+                
+                # Create coordinator instance with visible browser (not headless)
+                coordinator = WebAutomationCoordinator(headless=False)
+                
+                # Construct command based on context
+                search_query = last_search_context.get('query', 'unknown')
+                browser = last_search_context.get('browser', 'Google Chrome')
+                
+                print(f"🤖 Using WebDriver automation for: {intent}")
+                print(f"🔍 Search query: {search_query}")
+                
+                # Use the direct click first search result method
+                result = coordinator.click_first_search_result(search_query)
+                
+                if result.get('success'):
+                    return f"✅ {result.get('message', 'Successfully clicked first search result using WebDriver')}"
+                else:
+                    print("🔄 WebDriver failed, trying keyboard navigation fallback...")
+                    # Fall through to keyboard navigation fallback
+            else:
+                raise ImportError("Web automation coordinator not found")
+                
+        except Exception as e:
+            print(f"⚠️ WebDriver automation not available: {e}")
+            
+            # Fallback to the enhanced web link automation
+            import importlib.util
+            import os
+            
+            # Get the path to the web_link_automation tool
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            tool_path = os.path.join(current_dir, 'tools', 'web_link_automation.py')
+            
+            if os.path.exists(tool_path):
+                # Load the module dynamically
+                spec = importlib.util.spec_from_file_location("web_link_automation", tool_path)
+                web_link_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(web_link_module)
+                
+                # Get the function
+                click_first_search_result = web_link_module.click_first_search_result
+                
+                # Construct command based on context
+                search_query = last_search_context.get('query', 'unknown')
+                browser = last_search_context.get('browser', 'Google Chrome')
+                
+                print(f"🤖 Using fallback automation for: {intent}")
+                result = click_first_search_result(browser, search_query, wait_time=2)
+                
+                if result.get('success'):
+                    return f"✅ {result.get('message', 'Successfully clicked first link')}"
+                else:
+                    return f"⚠️ {result.get('message', 'Could not click first link')}"
+            else:
+                # Final fallback: Use enhanced web browsing
+                return handle_enhanced_web_browsing_followup(intent, last_search_context)
+            
+    except Exception as e:
+        return f"❌ Contextual follow-up error: {e}"
+
+def handle_enhanced_web_browsing_followup(intent, context):
+    """Enhanced web browsing with Selenium for follow-up actions"""
+    try:
+        print("🌟 Using enhanced web browsing for contextual follow-up...")
+        
+        # This would trigger the autonomous learning system to create
+        # a sophisticated web interaction tool
+        search_query = context.get('query', 'unknown')
+        browser = context.get('browser', 'Google Chrome')
+        
+        # For now, provide a helpful message and trigger learning
+        message = f"""
+🧠 Learning new capability: Web page interaction
+📋 Context: User searched for '{search_query}' and wants to click the first link
+🔧 This would require:
+   1. Selenium WebDriver automation
+   2. Page element detection
+   3. Safe click automation
+   4. Error handling for popups/ads
+   
+⚡ Triggering autonomous learning to create this capability...
+"""
+        
+        print(message)
+        
+        # Return a helpful response for now
+        return f"🔄 I'm learning how to click links on web pages. For now, please manually click the first search result for '{search_query}' in {browser}. I'll have this capability soon!"
+        
+    except Exception as e:
+        return f"❌ Enhanced web browsing error: {e}"
+
 def handle_youtube_automation_command(intent):
     """Handle YouTube automation commands using memory patterns"""
     try:
@@ -916,77 +1208,122 @@ def handle_youtube_automation_command(intent):
                 print(f"✅ Matched pattern: '{pattern}'")
                 break
         
-        # Extract search query from command
-        search_query = ""
-        
-        # Pattern matching for different command types
-        search_patterns = [
-            r'play\s+(.+?)\s+on\s+youtube',           # "play [song] on youtube"
-            r'search\s+(.+?)\s+on\s+youtube',         # "search [query] on youtube"
-            r'youtube\s+search\s+(.+)',               # "youtube search [query]"
-            r'find\s+(.+?)\s+on\s+youtube',           # "find [query] on youtube"
-            r'search\s+and\s+play\s+(.+?)\s+on\s+youtube',  # "search and play [song] on youtube"
-        ]
-        
-        for pattern in search_patterns:
-            match = re.search(pattern, intent_lower)
-            if match:
-                search_query = match.group(1).strip()
-                print(f"🔍 Extracted search query: '{search_query}'")
-                break
-        
-        # Handle compound commands like "open chrome and search youtube"
-        if not search_query and "chrome" in intent_lower and "search" in intent_lower:
-            if "youtube" in intent_lower:
-                search_query = "bollywood music"  # Default search for compound commands
-                print(f"🔗 Compound command detected, using default search: '{search_query}'")
-        
-        # If no specific search query, check for generic music/video terms
-        if not search_query:
-            music_keywords = ["music", "song", "video", "bollywood", "hindi"]
-            for keyword in music_keywords:
-                if keyword in intent_lower:
-                    search_query = keyword
-                    break
+        # Use enhanced YouTube automation with proper query extraction
+        try:
+            # Import enhanced YouTube automation functions with better path handling
+            import sys
+            import os
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            sys.path.append(project_root)
             
-            if not search_query:
-                search_query = "bollywood music"  # Ultimate fallback
-        
-        print(f"🎯 Final search query: '{search_query}'")
-        
-        # Execute YouTube automation
-        automation_script = '/Users/mahendrabahubali/chotu/chotu_youtube_player.py'
-        
-        if os.path.exists(automation_script):
-            print(f"🚀 Executing YouTube automation with query: '{search_query}'")
+            import sys
+            import os
+            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            from mcp.tools.web_automation_tool import _extract_youtube_query
+            from mcp.tools.enhanced_youtube_automation import enhanced_youtube_play
             
-            # Run the YouTube automation script
-            try:
-                result = subprocess.run([
-                    'python3', automation_script, 
-                    '--search', search_query,
-                    '--headless', 'false'  # Show browser for debugging
-                ], capture_output=True, text=True, timeout=60)
+            # Extract search query using enhanced extraction
+            search_query = _extract_youtube_query(intent)
+            print(f"🎯 Enhanced query extraction: '{search_query}'")
+            
+            # Use enhanced YouTube automation
+            print(f"🚀 Using enhanced YouTube automation with query: '{search_query}'")
+            result = enhanced_youtube_play(search_query, stop_current=True)
+            
+            if result.get('success'):
+                video_title = result.get('video_title', search_query)
+                return f"✅ Successfully played '{video_title}' on YouTube with enhanced automation"
+            else:
+                error_msg = result.get('error', 'Unknown error')
+                print(f"❌ Enhanced YouTube automation failed: {error_msg}")
+                # Fallback to old method
+                return handle_youtube_fallback_old_method(intent)
                 
-                if result.returncode == 0:
-                    print("✅ YouTube automation completed successfully")
-                    return f"✅ Successfully played '{search_query}' on YouTube with ad-skipping enabled"
-                else:
-                    print(f"❌ YouTube automation failed: {result.stderr}")
-                    return f"❌ YouTube automation failed: {result.stderr}"
-                    
-            except subprocess.TimeoutExpired:
-                return "⏰ YouTube automation timed out (60s)"
-            except Exception as e:
-                return f"❌ Error executing YouTube automation: {e}"
-        else:
-            print(f"❌ YouTube automation script not found: {automation_script}")
-            # Fallback: try to open YouTube in browser
-            return handle_youtube_fallback(search_query)
+        except Exception as e:
+            print(f"⚠️ Enhanced automation not available, using fallback: {e}")
+            return handle_youtube_fallback_old_method(intent)
             
     except Exception as e:
         print(f"❌ YouTube automation error: {e}")
         return f"❌ YouTube automation error: {e}"
+
+def handle_youtube_fallback_old_method(intent):
+    """Fallback to old YouTube automation method"""
+    
+    import re
+    import subprocess
+    
+    intent_lower = intent.lower()
+    
+    # Extract search query from command - improved patterns
+    search_query = ""
+    
+    # Enhanced pattern matching for different command types
+    search_patterns = [
+        r'(?:open youtube and play|play on youtube)\s+(.+)',           # "open youtube and play [song]" 
+        r'play\s+(.+?)\s+(?:on\s+)?youtube',                          # "play [song] on youtube"
+        r'search\s+(.+?)\s+on\s+youtube',                             # "search [query] on youtube"
+        r'youtube\s+search\s+(.+)',                                   # "youtube search [query]"
+        r'find\s+(.+?)\s+on\s+youtube',                               # "find [query] on youtube"
+        r'search\s+and\s+play\s+(.+?)\s+on\s+youtube',               # "search and play [song] on youtube"
+        r'(?:youtube|play)\s+(.+)',                                   # Generic "youtube [query]" or "play [query]"
+    ]
+    
+    for pattern in search_patterns:
+        match = re.search(pattern, intent_lower)
+        if match:
+            search_query = match.group(1).strip()
+            # Clean up common trailing words
+            search_query = re.sub(r'\s+(on\s+youtube|youtube)$', '', search_query)
+            print(f"� Extracted search query: '{search_query}'")
+            break
+    
+    # If no specific search query found, use the entire intent minus command words
+    if not search_query:
+        # Remove common command words but preserve content
+        cleaned = intent_lower
+        remove_words = ['open', 'youtube', 'and', 'play', 'search', 'find']
+        for word in remove_words:
+            cleaned = re.sub(r'\b' + word + r'\b', '', cleaned)
+        search_query = ' '.join(cleaned.split()).strip()
+        
+        # If still empty, use a sensible default
+        if not search_query or len(search_query) < 2:
+            search_query = "music"
+        
+        print(f"🎯 Cleaned search query: '{search_query}'")
+    
+    print(f"🎯 Final search query: '{search_query}'")
+    
+    # Execute YouTube automation
+    automation_script = '/Users/mahendrabahubali/chotu/chotu_youtube_player.py'
+    
+    if os.path.exists(automation_script):
+        print(f"🚀 Executing old YouTube automation with query: '{search_query}'")
+        
+        # Run the YouTube automation script
+        try:
+            result = subprocess.run([
+                'python3', automation_script, 
+                '--search', search_query,
+                '--headless', 'false'  # Show browser for debugging
+            ], capture_output=True, text=True, timeout=60)
+            
+            if result.returncode == 0:
+                print("✅ YouTube automation completed successfully")
+                return f"✅ Successfully played '{search_query}' on YouTube with ad-skipping enabled"
+            else:
+                print(f"❌ YouTube automation failed: {result.stderr}")
+                return f"❌ YouTube automation failed: {result.stderr}"
+                
+        except subprocess.TimeoutExpired:
+            return "⏰ YouTube automation timed out (60s)"
+        except Exception as e:
+            return f"❌ Error executing YouTube automation: {e}"
+    else:
+        print(f"❌ YouTube automation script not found: {automation_script}")
+        # Fallback: try to open YouTube in browser
+        return handle_youtube_fallback(search_query)
 
 def handle_youtube_fallback(search_query):
     """Fallback YouTube handling when automation script is not available"""

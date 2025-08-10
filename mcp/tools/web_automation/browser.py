@@ -79,7 +79,7 @@ class WebCommander:
         self.action_count += 1
     
     def _setup_driver(self):
-        """Set up Chrome driver with optimized options"""
+        """Set up Chrome driver with anti-detection measures"""
         if not SELENIUM_AVAILABLE:
             raise ImportError("Selenium is required for web automation")
         
@@ -88,22 +88,51 @@ class WebCommander:
         if self.headless:
             options.add_argument('--headless')
         
-        if self.disable_images:
-            prefs = {"profile.managed_default_content_settings.images": 2}
-            options.add_experimental_option("prefs", prefs)
+        # Anti-detection measures
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
         
-        # Security and performance options
-        options.add_argument('--no-sandbox')
+        # Stealth options
         options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--no-sandbox')
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-web-security')
         options.add_argument('--disable-features=VizDisplayCompositor')
         
+        # User agent and window size for natural browsing
+        options.add_argument('--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+        
+        # Preferences for natural behavior
+        prefs = {
+            "profile.default_content_setting_values.notifications": 2,
+            "profile.default_content_settings.popups": 0,
+            "profile.managed_default_content_settings.images": 1 if not self.disable_images else 2
+        }
+        options.add_experimental_option("prefs", prefs)
+        
         try:
-            self.driver = webdriver.Chrome(options=options)
+            # Use the fixed ChromeDriver path
+            from selenium.webdriver.chrome.service import Service
+            
+            # Try to use the local ChromeDriver first (version 138)
+            local_chromedriver = "/Users/mahendrabahubali/chotu/mcp/tools/chromedriver-mac-x64/chromedriver"
+            
+            if os.path.exists(local_chromedriver):
+                service = Service(executable_path=local_chromedriver)
+                self.driver = webdriver.Chrome(service=service, options=options)
+                print("✅ Using local ChromeDriver 138")
+            else:
+                # Fallback to system ChromeDriver
+                self.driver = webdriver.Chrome(options=options)
+                print("✅ Using system ChromeDriver")
+            
+            # Execute anti-detection script
+            self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            
             self.driver.implicitly_wait(3)
-            self.driver.set_window_size(1920, 1080)
-            print("✅ Chrome driver initialized successfully")
+            self.driver.set_window_size(1366, 768)  # More common resolution
+            print("✅ Chrome driver initialized with stealth mode")
             return True
         except Exception as e:
             print(f"❌ Failed to initialize Chrome driver: {e}")
@@ -163,21 +192,50 @@ class WebCommander:
             return False
     
     def search_google(self, query: str) -> bool:
-        """Perform a Google search"""
+        """Perform a Google search with CAPTCHA detection"""
         if not self.navigate_to("https://google.com"):
             return False
         
         try:
             self._rate_limit_check()
             
-            # Find search box
-            search_box = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.NAME, "q"))
-            )
+            # Check for CAPTCHA or unusual traffic detection
+            if self._check_for_captcha():
+                print("🤖 CAPTCHA detected - waiting for manual resolution or trying alternative approach")
+                return self._handle_captcha_situation(query)
             
+            # Find search box with multiple strategies
+            search_selectors = ['input[name="q"]', 'textarea[name="q"]', '#searchbox input']
+            search_box = None
+            
+            for selector in search_selectors:
+                try:
+                    search_box = WebDriverWait(self.driver, 5).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                    )
+                    break
+                except TimeoutException:
+                    continue
+            
+            if not search_box:
+                print("❌ Could not find search box")
+                return False
+            
+            # Human-like typing
             search_box.clear()
-            search_box.send_keys(query)
+            self._human_like_typing(search_box, query)
+            
+            # Add small delay before pressing enter
+            time.sleep(0.5 + (time.time() % 0.5))  # Random delay 0.5-1s
             search_box.send_keys(Keys.RETURN)
+            
+            # Wait for results
+            time.sleep(2)
+            
+            # Check if CAPTCHA appeared after search
+            if self._check_for_captcha():
+                print("🤖 Post-search CAPTCHA detected")
+                return self._handle_captcha_situation(query)
             
             print(f"🔍 Google search completed: {query}")
             return True
@@ -185,6 +243,261 @@ class WebCommander:
         except Exception as e:
             print(f"❌ Google search failed: {e}")
             return False
+    
+    def _check_for_captcha(self) -> bool:
+        """Check if CAPTCHA or unusual traffic page is displayed"""
+        try:
+            captcha_indicators = [
+                "unusual traffic",
+                "captcha",
+                "recaptcha",
+                "verify you're not a robot",
+                "prove you're not a robot",
+                "security check"
+            ]
+            
+            page_text = self.driver.page_source.lower()
+            page_title = self.driver.title.lower()
+            
+            for indicator in captcha_indicators:
+                if indicator in page_text or indicator in page_title:
+                    return True
+            
+            # Check for specific CAPTCHA elements
+            captcha_selectors = [
+                '.g-recaptcha',
+                '#recaptcha',
+                '[data-recaptcha]',
+                '.captcha',
+                'iframe[src*="recaptcha"]'
+            ]
+            
+            for selector in captcha_selectors:
+                try:
+                    element = self.driver.find_element(By.CSS_SELECTOR, selector)
+                    if element:
+                        return True
+                except NoSuchElementException:
+                    continue
+            
+            return False
+            
+        except Exception as e:
+            print(f"⚠️ Error checking for CAPTCHA: {e}")
+            return False
+    
+    def _handle_captcha_situation(self, original_query: str) -> bool:
+        """Handle CAPTCHA situation with alternative strategies"""
+        print("🔄 Implementing CAPTCHA bypass strategies...")
+        
+        # Strategy 1: Wait and retry
+        print("   Strategy 1: Waiting for manual resolution (10 seconds)...")
+        time.sleep(10)
+        
+        if not self._check_for_captcha():
+            print("   ✅ CAPTCHA resolved, continuing with search")
+            return self.search_google(original_query)
+        
+        # Strategy 2: Try DuckDuckGo as alternative
+        print("   Strategy 2: Switching to DuckDuckGo...")
+        if self._search_duckduckgo(original_query):
+            return True
+        
+        # Strategy 3: Direct site navigation
+        print("   Strategy 3: Attempting direct site navigation...")
+        return self._try_direct_navigation(original_query)
+    
+    def _search_duckduckgo(self, query: str) -> bool:
+        """Use DuckDuckGo as alternative search engine"""
+        try:
+            if not self.navigate_to("https://duckduckgo.com"):
+                return False
+            
+            search_box = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.NAME, "q"))
+            )
+            
+            search_box.clear()
+            self._human_like_typing(search_box, query)
+            search_box.send_keys(Keys.RETURN)
+            
+            print(f"🦆 DuckDuckGo search completed: {query}")
+            return True
+            
+        except Exception as e:
+            print(f"❌ DuckDuckGo search failed: {e}")
+            return False
+    
+    def _try_direct_navigation(self, query: str) -> bool:
+        """Try to navigate directly to common sites based on query"""
+        # Common site mappings
+        site_mappings = {
+            'amazon': 'https://amazon.com',
+            'youtube': 'https://youtube.com',
+            'facebook': 'https://facebook.com',
+            'twitter': 'https://twitter.com',
+            'instagram': 'https://instagram.com',
+            'linkedin': 'https://linkedin.com',
+            'github': 'https://github.com',
+            'stackoverflow': 'https://stackoverflow.com',
+            'reddit': 'https://reddit.com',
+            'wikipedia': 'https://wikipedia.org'
+        }
+        
+        query_lower = query.lower()
+        for site, url in site_mappings.items():
+            if site in query_lower:
+                print(f"🎯 Direct navigation to {site}")
+                return self.navigate_to(url)
+        
+        print("❌ No direct navigation option found")
+        return False
+    
+    def _human_like_typing(self, element, text: str):
+        """Type text in a human-like manner with random delays"""
+        for char in text:
+            element.send_keys(char)
+            # Random delay between keystrokes (50-150ms)
+            time.sleep(0.05 + (time.time() % 0.1))
+    
+    def click_first_search_result(self, search_query: str = "") -> bool:
+        """Click the first search result on Google or DuckDuckGo"""
+        try:
+            self._rate_limit_check()
+            
+            # Check if we're on DuckDuckGo or Google
+            current_url = self.driver.current_url.lower()
+            
+            if 'duckduckgo' in current_url:
+                return self._click_first_duckduckgo_result(search_query)
+            else:
+                return self._click_first_google_result(search_query)
+            
+        except Exception as e:
+            print(f"❌ Click first search result failed: {e}")
+            return False
+    
+    def _click_first_google_result(self, search_query: str) -> bool:
+        """Click first result on Google search with improved element handling"""
+        # Common selectors for Google search results
+        result_selectors = [
+            'h3 a',  # Standard title links
+            '.g h3 a',  # Result group title links
+            '[data-ved] h3 a',  # Data-ved title links
+            '.yuRUbf a',  # New Google layout
+            '.r a',  # Classic layout
+            'a[href*="/url?q="]'  # URL redirect links
+        ]
+        
+        for selector in result_selectors:
+            try:
+                # Wait for search results to load
+                results = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
+                )
+                
+                if results:
+                    first_result = results[0]
+                    
+                    # Try multiple click strategies
+                    success = self._try_multiple_click_strategies(first_result, search_query)
+                    if success:
+                        print(f"✅ Clicked first Google search result for: {search_query}")
+                        return True
+                    
+            except TimeoutException:
+                continue
+            except Exception as e:
+                print(f"⚠️ Google selector {selector} failed: {e}")
+                continue
+        
+        print(f"❌ No clickable Google search results found for: {search_query}")
+        return False
+    
+    def _try_multiple_click_strategies(self, element, search_query: str) -> bool:
+        """Try multiple strategies to click an element"""
+        
+        # Strategy 1: Scroll into view and regular click
+        try:
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+            time.sleep(0.5)
+            element.click()
+            return True
+        except Exception as e:
+            print(f"🔄 Regular click failed: {str(e)[:100]}...")
+        
+        # Strategy 2: JavaScript click
+        try:
+            print("🔄 Trying JavaScript click...")
+            self.driver.execute_script("arguments[0].click();", element)
+            return True
+        except Exception as e:
+            print(f"🔄 JavaScript click failed: {e}")
+        
+        # Strategy 3: Actions click
+        try:
+            print("🔄 Trying Actions click...")
+            from selenium.webdriver.common.action_chains import ActionChains
+            actions = ActionChains(self.driver)
+            actions.move_to_element(element).click().perform()
+            return True
+        except Exception as e:
+            print(f"🔄 Actions click failed: {e}")
+        
+        # Strategy 4: Get href and navigate directly
+        try:
+            print("🔄 Trying direct navigation...")
+            href = element.get_attribute('href')
+            if href and href.startswith('http'):
+                self.driver.get(href)
+                return True
+        except Exception as e:
+            print(f"🔄 Direct navigation failed: {e}")
+        
+        # Strategy 5: Send Enter key to element
+        try:
+            print("🔄 Trying Enter key...")
+            element.send_keys(Keys.RETURN)
+            return True
+        except Exception as e:
+            print(f"🔄 Enter key failed: {e}")
+        
+        return False
+    
+    def _click_first_duckduckgo_result(self, search_query: str) -> bool:
+        """Click first result on DuckDuckGo search with improved element handling"""
+        # DuckDuckGo result selectors
+        result_selectors = [
+            '.result__title a',  # Standard DuckDuckGo results
+            '.result h2 a',      # Alternative layout
+            'a[data-testid="result-title-a"]',  # New layout
+            '.result__a'         # Direct result links
+        ]
+        
+        for selector in result_selectors:
+            try:
+                # Wait for search results to load
+                results = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
+                )
+                
+                if results:
+                    first_result = results[0]
+                    
+                    # Try multiple click strategies
+                    success = self._try_multiple_click_strategies(first_result, search_query)
+                    if success:
+                        print(f"✅ Clicked first DuckDuckGo search result for: {search_query}")
+                        return True
+                    
+            except TimeoutException:
+                continue
+            except Exception as e:
+                print(f"⚠️ DuckDuckGo selector {selector} failed: {e}")
+                continue
+        
+        print(f"❌ No clickable DuckDuckGo search results found for: {search_query}")
+        return False
     
     def find_element_smart(self, target: str, by_type: str = "auto") -> Optional[Any]:
         """Smart element finding with multiple strategies"""
@@ -346,6 +659,79 @@ class WebCommander:
             )
             return element is not None
         except TimeoutException:
+            return False
+    
+    def search(self, query: str) -> bool:
+        """
+        Wrapper method for search functionality
+        Calls search_google for consistency with test expectations
+        """
+        try:
+            return self.search_google(query)
+        except Exception as e:
+            print(f"⚠️ Search failed: {e}")
+            return False
+    
+    def scroll_down(self, pixels: int = 300) -> bool:
+        """
+        Scroll down the page
+        
+        Args:
+            pixels: Number of pixels to scroll down
+            
+        Returns:
+            bool: True if scroll was successful
+        """
+        try:
+            if not self.driver:
+                print("❌ No browser session active")
+                return False
+            
+            self._rate_limit_check()
+            
+            # Scroll down using JavaScript
+            self.driver.execute_script(f"window.scrollBy(0, {pixels});")
+            
+            # Small delay to allow page to settle
+            import time
+            time.sleep(1)
+            
+            print(f"✅ Scrolled down {pixels} pixels")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Scroll failed: {e}")
+            return False
+    
+    def scroll_up(self, pixels: int = 300) -> bool:
+        """
+        Scroll up the page
+        
+        Args:
+            pixels: Number of pixels to scroll up
+            
+        Returns:
+            bool: True if scroll was successful
+        """
+        try:
+            if not self.driver:
+                print("❌ No browser session active")
+                return False
+            
+            self._rate_limit_check()
+            
+            # Scroll up using JavaScript (negative pixels)
+            self.driver.execute_script(f"window.scrollBy(0, -{pixels});")
+            
+            # Small delay to allow page to settle
+            import time
+            time.sleep(1)
+            
+            print(f"✅ Scrolled up {pixels} pixels")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Scroll up failed: {e}")
             return False
 
 # Example usage

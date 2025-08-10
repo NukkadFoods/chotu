@@ -17,9 +17,35 @@ sys.path.append(project_root)
 
 try:
     from mcp.tools.web_automation.coordinator import WebAutomationCoordinator
-except ImportError as e:
-    print(f"⚠️ Web automation components not fully available: {e}")
-    WebAutomationCoordinator = None
+    from mcp.tools.enhanced_youtube_automation import enhanced_youtube_play, enhanced_youtube_stop, enhanced_youtube_status, enhanced_youtube_close
+    ENHANCED_YOUTUBE_AVAILABLE = True
+    print("✅ Enhanced YouTube automation loaded successfully")
+except ImportError:
+    try:
+        # Try relative imports
+        from .web_automation.coordinator import WebAutomationCoordinator
+        from .enhanced_youtube_automation import enhanced_youtube_play, enhanced_youtube_stop, enhanced_youtube_status, enhanced_youtube_close
+        ENHANCED_YOUTUBE_AVAILABLE = True
+        print("✅ Enhanced YouTube automation loaded via relative import")
+    except ImportError:
+        try:
+            # Try direct imports for coordinator and YouTube automation
+            from web_automation.coordinator import WebAutomationCoordinator
+            from enhanced_youtube_automation import enhanced_youtube_play, enhanced_youtube_stop, enhanced_youtube_status, enhanced_youtube_close
+            ENHANCED_YOUTUBE_AVAILABLE = True
+            print("✅ Web automation loaded via direct import")
+        except ImportError:
+            try:
+                # YouTube only (fallback)
+                from enhanced_youtube_automation import enhanced_youtube_play, enhanced_youtube_stop, enhanced_youtube_status, enhanced_youtube_close
+                WebAutomationCoordinator = None
+                ENHANCED_YOUTUBE_AVAILABLE = True
+                print("✅ Enhanced YouTube automation loaded via direct import (fixed version)")
+                print("⚠️ General web automation coordinator not available")
+            except ImportError as e:
+                print(f"⚠️ Web automation components not fully available: {e}")
+                WebAutomationCoordinator = None
+                ENHANCED_YOUTUBE_AVAILABLE = False
 
 def web_automation_tool(command: str, headless: bool = False, context: Dict = None) -> Dict[str, Any]:
     """
@@ -37,6 +63,20 @@ def web_automation_tool(command: str, headless: bool = False, context: Dict = No
     print(f"🌐 CHOTU WEB AUTOMATION")
     print(f"Command: {command}")
     print(f"Headless: {headless}")
+    
+    # Check if this is a YouTube command and use enhanced automation
+    command_lower = command.lower()
+    youtube_triggers = [
+        "youtube", "play", "song", "music", "video", 
+        "search youtube", "open youtube", "stop video", "pause video"
+    ]
+    
+    if any(trigger in command_lower for trigger in youtube_triggers):
+        if ENHANCED_YOUTUBE_AVAILABLE:
+            print("🎵 Using enhanced YouTube automation...")
+            return _handle_youtube_command(command, context)
+        else:
+            print("⚠️ Enhanced YouTube automation not available, using standard automation...")
     
     if not WebAutomationCoordinator:
         return {
@@ -73,6 +113,189 @@ def web_automation_tool(command: str, headless: bool = False, context: Dict = No
         
         _log_web_interaction(command, error_result)
         return error_result
+
+def _handle_youtube_command(command: str, context: Dict = None) -> Dict[str, Any]:
+    """Handle YouTube-specific commands with enhanced automation"""
+    
+    command_lower = command.lower()
+    
+    # Stop/pause commands
+    if any(word in command_lower for word in ["stop", "pause", "close"]):
+        print("⏹️ Processing stop command...")
+        result = enhanced_youtube_stop()
+        result["tool"] = "enhanced_youtube"
+        result["command"] = command
+        return result
+    
+    # Play/search commands
+    if any(word in command_lower for word in ["play", "search", "find", "open"]):
+        print("▶️ Processing play command...")
+        
+        # Extract search query from command
+        search_query = _extract_youtube_query(command)
+        
+        if search_query:
+            # Check if we should stop current video
+            stop_current = any(word in command_lower for word in ["stop", "different", "new", "change"])
+            
+            result = enhanced_youtube_play(search_query, stop_current=stop_current)
+            result["tool"] = "enhanced_youtube"
+            result["command"] = command
+            result["extracted_query"] = search_query
+            return result
+        else:
+            return {
+                "success": False,
+                "error": "Could not extract search query from command",
+                "command": command,
+                "tool": "enhanced_youtube"
+            }
+    
+    # Status commands
+    if any(word in command_lower for word in ["status", "check", "current"]):
+        print("📊 Processing status command...")
+        result = enhanced_youtube_status()
+        result["tool"] = "enhanced_youtube"
+        result["command"] = command
+        return result
+    
+    # Default: treat as play command
+    search_query = _extract_youtube_query(command)
+    if search_query:
+        result = enhanced_youtube_play(search_query, stop_current=True)
+        result["tool"] = "enhanced_youtube"
+        result["command"] = command
+        result["extracted_query"] = search_query
+        return result
+    
+    return {
+        "success": False,
+        "error": "Could not understand YouTube command",
+        "command": command,
+        "tool": "enhanced_youtube"
+    }
+
+def _extract_youtube_query(command: str) -> str:
+    """Extract search query from YouTube command"""
+    
+    command_lower = command.lower()
+    
+    # Remove common command words but keep important content words
+    stop_words = [
+        "can you", "please", "chotu", "on youtube", "in youtube", "from youtube", 
+        "youtube", "video", "and play", "then play"
+    ]
+    
+    # Clean the command - be more selective about word removal
+    cleaned = command_lower
+    for stop_word in stop_words:
+        cleaned = cleaned.replace(stop_word, " ")
+    
+    # Remove extra spaces and get the query
+    query = " ".join(cleaned.split()).strip()
+    
+    # If query is too short or still has command words, try pattern extraction
+    if len(query) < 3 or any(word in query for word in ["play", "search", "find", "open"]):
+        # Look for patterns like "play X songs" or "search for X"
+        import re
+        
+        patterns = [
+            r"play\s+(.+?)\s+(?:songs?|music|video|on)",
+            r"search\s+(?:for\s+)?(.+?)\s+(?:on|in)",
+            r"find\s+(.+?)\s+(?:on|in)",
+            r"open\s+(.+?)\s+(?:on|in)",
+            r"(?:play|search|find)\s+(.+)",
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, command_lower)
+            if match:
+                extracted = match.group(1).strip()
+                
+                # Clean extracted query
+                for stop_word in ["some", "for", "the"]:
+                    if extracted.startswith(stop_word + " "):
+                        extracted = extracted[len(stop_word):].strip()
+                
+                # Remove trailing words that are not part of the content
+                trailing_words = ["on", "in", "from", "music", "songs", "video"]
+                words = extracted.split()
+                while words and words[-1] in trailing_words:
+                    words.pop()
+                
+                if words:
+                    query = " ".join(words)
+                    break
+    
+    # Improve query for movie songs to get original versions
+    if "movie" in query.lower() or "film" in query.lower():
+        # Add keywords to prioritize original songs over remixes
+        if "kasoor" in query.lower():
+            query = query + " original songs bollywood soundtrack"
+        elif any(movie in query.lower() for movie in ["movie", "film"]):
+            query = query + " original songs soundtrack"
+    
+    # Filter out unwanted terms from user commands that leak into query
+    unwanted_terms = ["stop this song", "stop current", "this song"]
+    for term in unwanted_terms:
+        query = query.replace(term, "").strip()
+    
+    # Clean up extra spaces
+    query = " ".join(query.split())
+    
+    return query if len(query) >= 2 else command.strip()
+
+def enhanced_stop_video() -> Dict[str, Any]:
+    """
+    Stop currently playing YouTube video
+    
+    Returns:
+        Dict: Result of stop operation
+    """
+    
+    if ENHANCED_YOUTUBE_AVAILABLE:
+        return enhanced_youtube_stop()
+    else:
+        return {
+            "success": False,
+            "error": "Enhanced YouTube automation not available"
+        }
+
+def enhanced_play_video(query: str, stop_current: bool = True) -> Dict[str, Any]:
+    """
+    Play YouTube video with enhanced controls
+    
+    Args:
+        query: Search query for the video
+        stop_current: Whether to stop current video first
+        
+    Returns:
+        Dict: Result of play operation
+    """
+    
+    if ENHANCED_YOUTUBE_AVAILABLE:
+        return enhanced_youtube_play(query, stop_current)
+    else:
+        return {
+            "success": False,
+            "error": "Enhanced YouTube automation not available"
+        }
+
+def get_youtube_session_status() -> Dict[str, Any]:
+    """
+    Get current YouTube session status
+    
+    Returns:
+        Dict: Session status information
+    """
+    
+    if ENHANCED_YOUTUBE_AVAILABLE:
+        return enhanced_youtube_status()
+    else:
+        return {
+            "session_active": False,
+            "error": "Enhanced YouTube automation not available"
+        }
 
 def search_web(query: str, search_engine: str = "google") -> Dict[str, Any]:
     """
@@ -163,6 +386,58 @@ def _log_web_interaction(command: str, result: Dict[str, Any]):
             
     except Exception as e:
         print(f"⚠️ Failed to log web interaction: {e}")
+
+def enhanced_stop_video() -> Dict[str, Any]:
+    """
+    Stop currently playing YouTube video
+    
+    Returns:
+        Dict: Result of stop operation
+    """
+    
+    if ENHANCED_YOUTUBE_AVAILABLE:
+        return enhanced_youtube_stop()
+    else:
+        return {
+            "success": False,
+            "error": "Enhanced YouTube automation not available"
+        }
+
+def enhanced_play_video(query: str, stop_current: bool = True) -> Dict[str, Any]:
+    """
+    Play YouTube video with enhanced controls
+    
+    Args:
+        query: Search query for the video
+        stop_current: Whether to stop current video first
+        
+    Returns:
+        Dict: Result of play operation
+    """
+    
+    if ENHANCED_YOUTUBE_AVAILABLE:
+        return enhanced_youtube_play(query, stop_current)
+    else:
+        return {
+            "success": False,
+            "error": "Enhanced YouTube automation not available"
+        }
+
+def get_youtube_session_status() -> Dict[str, Any]:
+    """
+    Get current YouTube session status
+    
+    Returns:
+        Dict: Session status information
+    """
+    
+    if ENHANCED_YOUTUBE_AVAILABLE:
+        return enhanced_youtube_status()
+    else:
+        return {
+            "session_active": False,
+            "error": "Enhanced YouTube automation not available"
+        }
 
 def get_web_automation_status() -> Dict[str, Any]:
     """Get current web automation status and capabilities"""

@@ -47,6 +47,68 @@ class WebAutomationCoordinator:
         print(f"   Headless mode: {'ON' if headless else 'OFF'}")
         print(f"   Safety mode: {'ON' if self.safety_mode else 'OFF'}")
     
+    def click_first_search_result(self, search_query: str = "") -> Dict[str, Any]:
+        """
+        Directly click the first search result using WebDriver
+        This is a specialized method for search result clicking
+        """
+        try:
+            # Ensure browser is started
+            if not self.session_active:
+                self._ensure_browser_ready()
+            
+            if not self.commander or not self.commander.driver:
+                return {
+                    "success": False,
+                    "error": "Browser not available",
+                    "search_query": search_query
+                }
+            
+            # Use the browser's click first search result method
+            success = self.commander.click_first_search_result(search_query)
+            
+            if success:
+                return {
+                    "success": True,
+                    "message": f"Successfully clicked first search result for '{search_query}'",
+                    "action": "clicked_first_result",
+                    "search_query": search_query,
+                    "browser": "WebDriver Chrome"
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": "Could not find or click first search result",
+                    "message": f"Failed to click first search result for '{search_query}'",
+                    "search_query": search_query
+                }
+                
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "message": f"Error clicking first search result for '{search_query}': {e}",
+                "search_query": search_query
+            }
+    
+    def _ensure_browser_ready(self):
+        """Ensure the browser is ready for automation"""
+        try:
+            if not self.commander:
+                self.commander = WebCommander(headless=self.headless)
+            
+            if not self.session_active:
+                success = self.commander.start_session()
+                if success:
+                    self.session_active = True
+                    print("🚀 Browser session started successfully")
+                else:
+                    print("❌ Failed to start browser session")
+                    
+        except Exception as e:
+            print(f"❌ Error starting browser: {e}")
+            raise
+    
     def handle_web_command(self, command: str, context: Dict = None) -> Dict[str, Any]:
         """
         Main entry point for handling web automation commands

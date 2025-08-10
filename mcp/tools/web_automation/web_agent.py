@@ -70,6 +70,35 @@ class WebTaskPlanner:
         
         return profiles
     
+    def _validate_json_response(self, response: str) -> str:
+        """Pre-validate and clean JSON response before parsing"""
+        
+        # Remove common GPT response artifacts
+        response = response.strip()
+        
+        # Remove markdown code blocks
+        if response.startswith('```json'):
+            response = response[7:]
+        elif response.startswith('```'):
+            response = response[3:]
+        if response.endswith('```'):
+            response = response[:-3]
+        
+        response = response.strip()
+        
+        # Ensure it starts and ends with braces
+        if not response.startswith('{'):
+            brace_pos = response.find('{')
+            if brace_pos > 0:
+                response = response[brace_pos:]
+        
+        if not response.endswith('}'):
+            brace_pos = response.rfind('}')
+            if brace_pos > 0:
+                response = response[:brace_pos + 1]
+        
+        return response
+
     def plan_web_task(self, user_command: str, context: Dict = None) -> Dict[str, Any]:
         """
         Plan a web task by breaking it down into actionable steps
@@ -98,59 +127,153 @@ class WebTaskPlanner:
             "context": context or {}
         }
         
-        prompt = f"""
-You are Chotu's web task planner. Break down this web command into executable steps.
+        prompt = f"""Create web automation plan for: "{user_command}"
 
-USER COMMAND: "{user_command}"
+CRITICAL: Return ONLY valid JSON. No explanations, no comments, no extra text.
+Start with {{ and end with }}. Use double quotes only.
 
-AVAILABLE SITE PROFILES: {list(self.known_sites.keys())}
-
-SIMILAR PAST EXPERIENCE: {json.dumps(similar_flow, indent=2) if similar_flow else "None"}
-
-Break this down into a detailed plan with these considerations:
-1. Identify the target website/service
-2. Plan navigation steps
-3. Identify interaction points (search boxes, buttons, forms)
-4. Consider safety checks for destructive actions
-5. Plan data extraction if needed
-
-Output as JSON:
+Example response format:
 {{
-    "task_type": "search|extraction|form_filling|navigation|shopping",
-    "target_site": "website domain or name",
-    "confidence": 85,
-    "safety_level": "safe|caution|dangerous",
+    "task_type": "search",
+    "target_site": "google", 
     "steps": [
         {{
-            "step_number": 1,
-            "action": "navigate|search|click|fill|extract|wait",
-            "target": "URL or element description",
-            "value": "input value if needed",
-            "selector_hint": "CSS selector or XPath hint",
-            "safety_check": true/false,
-            "description": "human readable step description"
+            "action": "open_browser",
+            "params": {{}},
+            "description": "open browser"
+        }},
+        {{
+            "action": "search_google",
+            "params": {{"query": "cats"}},
+            "description": "search for cats"
         }}
     ],
-    "expected_outcome": "what should happen when successful",
-    "fallback_plan": "what to do if primary plan fails",
-    "estimated_time": "seconds",
-    "required_permissions": ["none|camera|microphone|location|notifications"]
+    "safety_level": "safe",
+    "expected_outcome": "search results displayed"
 }}
 
-Focus on being practical and safe. Avoid any potentially harmful actions.
+Available actions:
+- open_browser: {{}} 
+- search_google: {{"query": "search terms"}}
+- go_to_url: {{"url": "https://site.com"}}
+- click_element: {{"text": "button text", "type": "button"}}
+- type_text: {{"text": "input text", "element": "search"}}
+- scroll_down: {{}}
+- wait: {{"seconds": 2}}
+
+Task types: search, navigation, interaction, automation
+Target sites: google, youtube, other
+Safety levels: safe, moderate, careful
+
+Now create JSON plan for: "{user_command}"
 """
         
         try:
             response = call_gpt_system(prompt)
             
-            # Clean and parse response
-            response = response.strip()
-            if response.startswith('```json'):
-                response = response[7:]
-            if response.endswith('```'):
-                response = response[:-3]
+            # Pre-validate and clean the response
+            response = self._validate_json_response(response)
             
-            plan = json.loads(response.strip())
+            # Enhanced JSON parsing with multiple fallback strategies
+            
+            # Try direct parsing first
+            try:
+                plan = json.loads(response)
+            except json.JSONDecodeError as e:
+                print(f"⚠️ Initial JSON parse failed: {e}")
+                
+                # Advanced JSON cleanup for GPT response issues
+                import re
+                
+                # Step 1: Extract only the JSON part
+                # Remove any text before the first {
+                first_brace = response.find('{')
+                if first_brace > 0:
+                    response = response[first_brace:]
+                
+                # Remove any text after the last }
+                last_brace = response.rfind('}')
+                if last_brace > 0:
+                    response = response[:last_brace + 1]
+                
+                # Step 2: Fix common GPT JSON formatting issues
+                
+                # Fix unterminated strings by adding missing quotes
+                lines = response.split('\n')
+                fixed_lines = []
+                for line_num, line in enumerate(lines):
+                    original_line = line
+                    line = line.strip()
+                    
+                    # Skip empty lines
+                    if not line:
+                        fixed_lines.append(original_line)
+                        continue
+                    
+                    # Handle incomplete string values
+                    if ':' in line and not line.endswith(',') and not line.endswith('}') and not line.endswith(']'):
+                        # Check if this line has an opening quote but no closing quote
+                        colon_pos = line.find(':')
+                        value_part = line[colon_pos + 1:].strip()
+                        
+                        if value_part.startswith('"') and not (value_part.endswith('"') or value_part.endswith('",') or value_part.endswith('"}')):
+                            # Add missing closing quote and comma
+                            if line_num < len(lines) - 1:  # Not the last line
+                                line = line + '",'
+                            else:
+                                line = line + '"'
+                    
+                    # Add missing commas after complete lines
+                    if (line.endswith('"') or line.endswith('}') or line.endswith(']')) and not line.endswith(','):
+                        # Check if next line exists and starts with a key or closing brace
+                        if line_num < len(lines) - 1:
+                            next_line = lines[line_num + 1].strip()
+                            if next_line and (next_line.startswith('"') or next_line.startswith('{')):
+                                line = line + ','
+                    
+                    fixed_lines.append(line)
+                
+                response = '\n'.join(fixed_lines)
+                
+                # Step 3: Additional cleanup
+                # Fix trailing commas before closing brackets
+                response = re.sub(r',(\s*[}\]])', r'\1', response)
+                
+                # Fix boolean values
+                response = response.replace('True', 'true').replace('False', 'false').replace('None', 'null')
+                
+                # Fix single quotes (but be careful not to break content)
+                response = re.sub(r"'([^']*)'(\s*:)", r'"\1"\2', response)  # Keys
+                response = re.sub(r":\s*'([^']*)'", r': "\1"', response)  # Values
+                
+                # Try parsing the cleaned JSON
+                try:
+                    plan = json.loads(response)
+                    print("✅ JSON fixed and parsed successfully")
+                except json.JSONDecodeError as e2:
+                    print(f"⚠️ Secondary JSON parse failed: {e2}")
+                    print(f"Cleaned JSON snippet:\n{response[:300]}...")
+                    
+                    # Step 4: Emergency fallback - create minimal valid JSON
+                    try:
+                        # Extract basic info using regex
+                        task_type_match = re.search(r'"task_type":\s*"([^"]*)"', response)
+                        target_match = re.search(r'"target_site":\s*"([^"]*)"', response)
+                        
+                        # Create a minimal valid plan
+                        plan = {
+                            "task_type": task_type_match.group(1) if task_type_match else "automation",
+                            "target_site": target_match.group(1) if target_match else "unknown",
+                            "steps": [
+                                {"action": "open_browser", "params": {}, "description": "open browser"},
+                                {"action": "wait", "params": {"seconds": 2}, "description": "wait for page load"}
+                            ],
+                            "safety_level": "safe",
+                            "expected_outcome": "basic automation completed"
+                        }
+                        print("🔧 Created emergency fallback plan")
+                    except:
+                        raise e2
             
             # Validate and enhance plan
             plan = self._validate_and_enhance_plan(plan, user_command)
@@ -165,6 +288,7 @@ Focus on being practical and safe. Avoid any potentially harmful actions.
             
         except Exception as e:
             print(f"❌ GPT planning failed: {e}")
+            print("🔄 Using fallback planning...")
             return self._fallback_planning(user_command)
     
     def _find_similar_flow(self, command: str) -> Optional[Dict]:

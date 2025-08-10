@@ -302,13 +302,14 @@ class ChoutuAI:
             return  # Already learned
         
         prompt = f"""
-        Create a comprehensive ROM entry for this successful command:
+        Create a comprehensive ROM entry for this successful command. Return ONLY valid JSON, no explanation text.
+        
         Raw Input: {ram['raw_input']}
         Intent: {ram.get('interpreted_intent', 'Unknown')}
         NLP Analysis: {ram.get('nlp_analysis', {})}
         Tools Used: {ram.get('tools_needed', [])}
         
-        Return JSON:
+        Return this exact JSON format:
         {{
             "input_pattern": "{ram['raw_input'].lower()}",
             "intent": "{ram.get('interpreted_intent', 'run command')}",
@@ -330,6 +331,12 @@ class ChoutuAI:
                 response = response[:-3]
             response = response.strip()
             
+            # Extract JSON from any explanatory text
+            if '{' in response and '}' in response:
+                start = response.find('{')
+                end = response.rfind('}') + 1
+                response = response[start:end]
+            
             # Try to parse JSON
             if response and response.startswith('{'):
                 new_entry = json.loads(response)
@@ -338,6 +345,7 @@ class ChoutuAI:
                 print("📘 Enhanced experience saved to ROM.")
             else:
                 print("⚠️  GPT response not in JSON format, skipping learning.")
+                print(f"    Response: {response[:100]}...")
         except Exception as e:
             print(f"⚠️  Failed to learn from task: {e}")
     
