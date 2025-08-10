@@ -1,0 +1,258 @@
+{
+  "schema_version": "1.0.0",
+  "last_updated": "2025-08-11",
+  "description": "Complete macOS system schema for Chotu AI code generation",
+  "system_info": {
+    "os": "macOS",
+    "product_name": "macOS",
+    "version": "12.7.6",
+    "codename": "Monterey",
+    "build_version": "21H1320",
+    "architecture": "x86_64",
+    "shell": "/bin/zsh",
+    "python_version": "3.12.0",
+    "user_home": "/Users/mahendrabahubali",
+    "project_root": "/Users/mahendrabahubali/chotu"
+  },
+  "project_structure": {
+    "root": "/Users/mahendrabahubali/chotu",
+    "directories": {
+      "mcp": "Main MCP server and tools",
+      "mcp/tools": "Static tools directory",
+      "mcp/dynamic_tools": "Auto-generated tools directory",
+      "mcp/self_learning": "Self-learning system components",
+      "utils": "Utility functions and GPT interface",
+      "memory": "Capability registry and memory management",
+      "config": "Configuration files",
+      "logs": "System logs"
+    },
+    "key_files": {
+      "capability_registry": "/Users/mahendrabahubali/chotu/memory/capability_registry.json",
+      "gpt_interface": "/Users/mahendrabahubali/chotu/utils/gpt_interface.py",
+      "learning_config": "/Users/mahendrabahubali/chotu/config/learning_config.ini"
+    }
+  },
+  "macos_commands": {
+    "network": {
+      "wifi_scan": "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s",
+      "wifi_info": "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I",
+      "wifi_connect": "networksetup -setairportnetwork en0 SSID PASSWORD",
+      "wifi_status": "networksetup -getairportpower en0",
+      "wifi_enable": "networksetup -setairportpower en0 on",
+      "wifi_disable": "networksetup -setairportpower en0 off",
+      "network_interfaces": "networksetup -listallhardwareports",
+      "ip_config": "ifconfig",
+      "ping": "ping -c 4",
+      "dns_lookup": "nslookup",
+      "network_quality": "/usr/bin/networkQuality"
+    },
+    "bluetooth": {
+      "status": "system_profiler SPBluetoothDataType -json",
+      "devices": "system_profiler SPBluetoothDataType",
+      "power_status": "/usr/local/bin/blueutil -p",
+      "power_on": "/usr/local/bin/blueutil -p 1",
+      "power_off": "/usr/local/bin/blueutil -p 0",
+      "discoverable": "/usr/local/bin/blueutil -d 1",
+      "not_discoverable": "/usr/local/bin/blueutil -d 0",
+      "connected_devices": "/usr/local/bin/blueutil --paired",
+      "scan_devices": "/usr/local/bin/blueutil --inquiry"
+    },
+    "system": {
+      "system_info": "system_profiler SPSoftwareDataType -json",
+      "hardware_info": "system_profiler SPHardwareDataType -json",
+      "cpu_usage": "top -l 1 -s 0 | grep 'CPU usage'",
+      "memory_usage": "vm_stat",
+      "disk_usage": "df -h",
+      "battery_info": "pmset -g batt",
+      "temperature": "sudo powermetrics --samplers smc -n 1 --hide-cpu-duty-cycle",
+      "processes": "ps aux",
+      "kill_process": "kill -9 PID",
+      "launch_app": "open -a 'App Name'",
+      "quit_app": "osascript -e 'tell application \"App Name\" to quit'",
+      "volume_set": "osascript -e 'set volume output volume VALUE'",
+      "volume_get": "osascript -e 'output volume of (get volume settings)'",
+      "brightness_set": "osascript -e 'tell application \"System Events\" to tell every desktop to set brightness to VALUE'",
+      "sleep": "pmset sleepnow",
+      "restart": "sudo shutdown -r now",
+      "shutdown": "sudo shutdown -h now"
+    },
+    "files": {
+      "list_directory": "ls -la",
+      "create_directory": "mkdir -p",
+      "remove_directory": "rm -rf",
+      "copy_file": "cp",
+      "move_file": "mv",
+      "delete_file": "rm",
+      "file_info": "stat",
+      "file_permissions": "ls -l",
+      "change_permissions": "chmod",
+      "find_files": "find",
+      "search_content": "grep -r",
+      "file_size": "du -h",
+      "disk_usage": "df -h",
+      "open_file": "open",
+      "compress": "tar -czf archive.tar.gz",
+      "extract": "tar -xzf archive.tar.gz"
+    },
+    "media": {
+      "screenshot": "screencapture -x screenshot.png",
+      "record_screen": "screencapture -v recording.mov",
+      "play_sound": "afplay audio_file.mp3",
+      "text_to_speech": "say 'text to speak'",
+      "volume_control": "osascript -e 'set volume VALUE'",
+      "get_camera_info": "system_profiler SPCameraDataType -json",
+      "audio_devices": "system_profiler SPAudioDataType -json"
+    },
+    "development": {
+      "python_version": "python3 --version",
+      "pip_install": "pip3 install package_name",
+      "pip_list": "pip3 list",
+      "git_status": "git status",
+      "git_commit": "git commit -m 'message'",
+      "git_push": "git push",
+      "node_version": "node --version",
+      "npm_install": "npm install package_name",
+      "homebrew_install": "brew install package_name",
+      "homebrew_search": "brew search package_name"
+    }
+  },
+  "installed_dependencies": {
+    "python_packages": [
+      "openai",
+      "selenium",
+      "requests"
+    ],
+    "system_tools": [
+      "git",
+      "python3",
+      "pip3",
+      "chromedriver",
+      "sqlite3",
+      "curl",
+      "blueutil"
+    ],
+    "optional_tools": [
+      "brew",
+      "node",
+      "npm",
+      "blueutil"
+    ]
+  },
+  "code_standards": {
+    "file_structure": {
+      "shebang": "#!/usr/bin/env python3",
+      "encoding": "# -*- coding: utf-8 -*-",
+      "docstring": "Module-level docstring with description",
+      "imports": "Standard library first, then third-party, then local",
+      "classes": "PascalCase with docstrings",
+      "functions": "snake_case with type hints and docstrings",
+      "constants": "UPPER_CASE"
+    },
+    "error_handling": {
+      "required": "All subprocess calls must have try/except",
+      "timeout": "Use timeout parameter for subprocess.run()",
+      "logging": "Print meaningful error messages",
+      "return_format": "Always return dict with status, message, data"
+    },
+    "security": {
+      "subprocess": "Use subprocess.run() with shell=False",
+      "input_validation": "Validate all user inputs",
+      "path_validation": "Validate file paths exist",
+      "permission_check": "Check permissions before file operations",
+      "no_eval": "Never use eval() or exec() on user input"
+    },
+    "return_format": {
+      "success": {
+        "status": "success",
+        "message": "Description of what happened",
+        "data": "Actual result data (list, dict, string, etc.)"
+      },
+      "error": {
+        "status": "error",
+        "message": "Description of the error",
+        "data": null
+      }
+    }
+  },
+  "macos_specific": {
+    "permissions": {
+      "accessibility": "Some operations require accessibility permissions",
+      "full_disk_access": "File operations may need full disk access",
+      "camera": "Camera access requires user permission",
+      "microphone": "Microphone access requires user permission",
+      "location": "Location services require user permission"
+    },
+    "application_paths": {
+      "safari": "/Applications/Safari.app",
+      "chrome": "/Applications/Google Chrome.app",
+      "finder": "/System/Library/CoreServices/Finder.app",
+      "terminal": "/Applications/Utilities/Terminal.app",
+      "system_preferences": "/Applications/System Preferences.app"
+    },
+    "system_directories": {
+      "applications": "/Applications",
+      "library": "/Library",
+      "system": "/System",
+      "users": "/Users",
+      "tmp": "/tmp",
+      "var": "/var"
+    },
+    "environment_variables": {
+      "home": "$HOME",
+      "user": "$USER",
+      "path": "$PATH",
+      "shell": "$SHELL",
+      "lang": "$LANG"
+    }
+  },
+  "common_patterns": {
+    "subprocess_template": {
+      "basic": "subprocess.run([command, args], capture_output=True, text=True, timeout=30)",
+      "with_error_handling": "try:\n    result = subprocess.run([cmd], capture_output=True, text=True, timeout=30)\n    if result.returncode == 0:\n        return {'status': 'success', 'data': result.stdout.strip()}\n    else:\n        return {'status': 'error', 'message': result.stderr.strip()}\nexcept Exception as e:\n    return {'status': 'error', 'message': str(e)}"
+    },
+    "file_operations": {
+      "read_file": "with open(filepath, 'r', encoding='utf-8') as f:\n    content = f.read()",
+      "write_file": "with open(filepath, 'w', encoding='utf-8') as f:\n    f.write(content)",
+      "json_read": "with open(filepath, 'r') as f:\n    data = json.load(f)",
+      "json_write": "with open(filepath, 'w') as f:\n    json.dump(data, f, indent=2)"
+    },
+    "error_handling": {
+      "subprocess_error": "except subprocess.TimeoutExpired:\n    return {'status': 'error', 'message': 'Command timed out'}\nexcept subprocess.CalledProcessError as e:\n    return {'status': 'error', 'message': f'Command failed: {e}'}\nexcept Exception as e:\n    return {'status': 'error', 'message': f'Unexpected error: {e}'}"
+    }
+  },
+  "testing_requirements": {
+    "basic_tests": [
+      "Import test: Check if all imports work",
+      "Function test: Call main functions with valid inputs",
+      "Error test: Call functions with invalid inputs",
+      "Return format test: Verify return format is correct"
+    ],
+    "integration_tests": [
+      "System command test: Verify commands work on current system",
+      "Permission test: Check if required permissions are available",
+      "Performance test: Ensure commands complete within timeout"
+    ]
+  },
+  "examples": {
+    "network_tool": {
+      "description": "Example of how to list WiFi networks",
+      "code": "import subprocess\n\ndef list_wifi_networks():\n    try:\n        result = subprocess.run([\n            '/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport',\n            '-s'\n        ], capture_output=True, text=True, timeout=30)\n        \n        if result.returncode == 0:\n            return {\n                'status': 'success',\n                'message': 'WiFi networks listed successfully',\n                'data': result.stdout.strip()\n            }\n        else:\n            return {\n                'status': 'error',\n                'message': f'Command failed: {result.stderr.strip()}',\n                'data': None\n            }\n    except Exception as e:\n        return {\n            'status': 'error',\n            'message': f'Error: {str(e)}',\n            'data': None\n        }"
+    }
+  },
+  "installation_commands": {
+    "blueutil": "brew install blueutil"
+  },
+  "generated_tools": {
+    "auto_generated_tool_7": {
+      "path": "/Users/mahendrabahubali/chotu/mcp/dynamic_tools/auto_generated_tool_7.py",
+      "capabilities": [
+        "list_wifi_networks",
+        "check_bluetooth_status",
+        "toggle_bluetooth",
+        "test_network_quality"
+      ],
+      "created": "2025-08-11 04:51:54",
+      "status": "active"
+    }
+  }
+}
