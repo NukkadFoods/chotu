@@ -96,38 +96,56 @@ TOOL_METADATA = {
         macos_patterns = self._load_macos_patterns()
         
         prompt = f"""
-You are an expert Python developer creating tools for macOS. Generate a complete, production-ready Python tool.
+TASK: Create a macOS Python tool for the Chotu AI Assistant
 
-REQUIREMENTS:
-{json.dumps(requirements, indent=2)}
+SYSTEM CONTEXT:
+- OS: macOS (latest version)
+- Python: Python 3.9+
+- Architecture: MCP (Model Context Protocol) tool system
+- Location: Will be saved as /Users/mahendrabahubali/chotu/mcp/dynamic_tools/{{tool_name}}.py
 
-MACOS PATTERNS:
+SPECIFIC REQUIREMENTS:
+Tool Name: {requirements.get('name', 'unknown_tool')}
+Category: {requirements.get('category', 'unknown')}
+Purpose: {requirements.get('description', 'No description provided')}
+User Goal: {requirements.get('user_goal', 'No goal specified')}
+
+TECHNICAL SPECIFICATIONS:
+{json.dumps(requirements.get('technical_requirements', {}), indent=2)}
+
+SAFETY REQUIREMENTS:
+{requirements.get('safety_considerations', ['Standard safety practices'])}
+
+SUCCESS CRITERIA (Must implement these test scenarios):
+{requirements.get('test_scenarios', ['Basic functionality test'])}
+
+MACOS COMMAND PATTERNS (Use these specific commands):
 {json.dumps(macos_patterns, indent=2)}
 
-TOOL TEMPLATE STRUCTURE:
+EXACT TEMPLATE TO FOLLOW:
 {self.tool_template}
 
-CRITICAL INSTRUCTIONS:
-1. Follow the exact template structure above
-2. Use ONLY macOS commands from the patterns provided
-3. Implement comprehensive error handling
-4. Add detailed docstrings with type hints
-5. Include parameter validation
-6. Use subprocess.run() with proper error checking
-7. Return consistent success/error format
-8. Add logging for debugging
-9. Handle edge cases and timeouts
-10. Include fallback mechanisms where appropriate
+OUTPUT REQUIREMENTS:
+1. Return ONLY executable Python code (no markdown, no explanations)
+2. Start with #!/usr/bin/env python3
+3. Include complete imports at the top
+4. Follow the template structure exactly
+5. Implement ALL test scenarios as functions
+6. Use only the macOS patterns provided above
+7. Include proper error handling with try/except
+8. Return consistent dict format: {{"status": "success/error", "message": "...", "data": {{}}}}
 
-SECURITY REQUIREMENTS:
-- Validate all input parameters
-- Use subprocess.run() instead of os.system()
-- Escape shell arguments properly
-- Limit resource usage (timeouts, memory)
-- Never execute user-provided shell commands directly
+IMPLEMENTATION RULES:
+- Function names must be descriptive and snake_case
+- All functions must have type hints
+- Include docstrings for all functions
+- Use subprocess.run() for system commands
+- Validate all inputs
+- Handle timeouts and errors gracefully
+- Log important actions
+- Never use os.system() or shell=True
 
-Generate the complete Python tool code:
-"""
+Generate the complete tool code now:"""
         
         try:
             code = call_gpt_coding(prompt)
@@ -184,8 +202,17 @@ Generate the complete Python tool code:
             },
             "network": {
                 "wifi_status": "networksetup -getairportpower en0",
-                "wifi_networks": "networksetup -listpreferredwirelessnetworks en0",
-                "ip_address": "ifconfig | grep 'inet '"
+                "wifi_networks_scan": "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s",
+                "wifi_networks_preferred": "networksetup -listpreferredwirelessnetworks 'Wi-Fi'",
+                "wifi_interface_info": "networksetup -listallhardwareports | grep -A 1 Wi-Fi",
+                "network_interfaces": "networksetup -listallhardwareports",
+                "ip_address": "ifconfig | grep 'inet '",
+                "current_network": "networksetup -getairportnetwork en0",
+                "examples": {
+                    "scan_wifi": "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s",
+                    "check_wifi_power": "networksetup -getairportpower en0",
+                    "get_current_network": "networksetup -getairportnetwork en0"
+                }
             },
             "screenshot": {
                 "full_screen": "screencapture '{filename}'",
@@ -231,13 +258,19 @@ Generate the complete Python tool code:
     
     def _clean_generated_code(self, code: str) -> str:
         """Clean and format generated code"""
-        # Remove markdown code blocks
-        if code.startswith('```python'):
+        # Remove markdown code blocks (handle various formats)
+        if code.startswith('````python'):
+            code = code[10:]
+        elif code.startswith('```python'):
             code = code[9:]
+        elif code.startswith('````'):
+            code = code[4:]
         elif code.startswith('```'):
             code = code[3:]
         
-        if code.endswith('```'):
+        if code.endswith('````'):
+            code = code[:-4]
+        elif code.endswith('```'):
             code = code[:-3]
         
         # Remove extra whitespace
@@ -285,6 +318,17 @@ Generate the complete Python tool code:
             
         except SyntaxError as e:
             print(f"❌ Syntax error in generated code: {e}")
+            
+            # Save the problematic code for debugging
+            debug_file = "/Users/mahendrabahubali/chotu/debug_generated_code.py"
+            try:
+                with open(debug_file, 'w') as f:
+                    f.write(code)
+                print(f"🐛 Debug: Generated code saved to {debug_file}")
+                print(f"🐛 Error details: Line {e.lineno}, {e.msg}")
+            except Exception as save_error:
+                print(f"🐛 Could not save debug code: {save_error}")
+            
             return False
     
     def update_existing_tool(self, tool_path: str, enhancement_requirements: Dict) -> Optional[str]:

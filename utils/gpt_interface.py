@@ -8,12 +8,12 @@ load_dotenv()
 
 # Model configurations for different use cases
 MODEL_CONFIG = {
-    # For coding tasks - use cost-effective GPT-3.5-turbo
+    # For coding tasks - use GPT-4o-mini for excellent balance of quality and cost
     "coding": {
-        "model": "gpt-3.5-turbo",
-        "max_tokens": 2000,
-        "temperature": 0.3,
-        "description": "Cost-effective coding with GPT-3.5-turbo - good code quality, lower cost"
+        "model": "gpt-4o-mini",
+        "max_tokens": 4000,
+        "temperature": 0.2,
+        "description": "Excellent coding with GPT-4o-mini - great code quality, cost-effective"
     },
     
     # For learning and autonomous capability generation - use cost-effective GPT-3.5-turbo

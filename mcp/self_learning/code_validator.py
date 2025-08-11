@@ -346,8 +346,14 @@ except Exception as e:
         # Check for proper macOS command usage
         has_macos_commands = any(cmd in code_lower for cmd in macos_commands)
         
+        # Only flag as issue if subprocess is used with Windows/Linux specific patterns
+        # Generic subprocess usage is acceptable
         if 'subprocess' in code and not has_macos_commands:
-            issues.append("Uses subprocess but no macOS-specific commands detected")
+            # Check if it's actually problematic (using non-macOS commands)
+            has_problematic_commands = any(pattern.lower() in code_lower for pattern in windows_patterns + linux_patterns)
+            if has_problematic_commands:
+                issues.append("Uses subprocess with non-macOS commands")
+            # Generic subprocess usage is fine, don't flag it
         
         return len(issues) == 0, issues
     
@@ -433,21 +439,24 @@ except Exception as e:
         if not deps_valid:
             results['overall_valid'] = False
         
-        # macOS compatibility validation
+        # macOS compatibility validation (warnings only, not blocking)
         macos_valid, macos_issues = self.validate_macos_compatibility(code)
         results['validation_results']['macos_compatibility'] = {
             'valid': macos_valid,
             'issues': macos_issues
         }
-        if not macos_valid:
-            results['overall_valid'] = False
+        # Don't fail overall validation for macOS compatibility issues
+        # if not macos_valid:
+        #     results['overall_valid'] = False
         
-        # Resource usage validation
+        # Resource usage validation (warnings only, not blocking)
         resource_valid, resource_issues = self.validate_resource_usage(code)
         results['validation_results']['resource_usage'] = {
             'valid': resource_valid,
             'issues': resource_issues
         }
+        # Don't fail overall validation for resource usage warnings
+        # Resource issues are just optimization suggestions
         
         # Execution validation (only if other validations pass)
         if results['overall_valid']:

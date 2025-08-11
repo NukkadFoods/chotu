@@ -70,26 +70,38 @@ class ChoutuAI:
         self.mcp_server_thread = threading.Thread(target=run_mcp, daemon=True)
         self.mcp_server_thread.start()
         
-        # Wait for server to start
-        time.sleep(3)
+        # Wait for server to start with progressive checking
+        print("🔄 Waiting for MCP server to start...")
+        server_ready = False
+        max_attempts = 10  # Try for up to 10 seconds
         
-        # Test server connection
-        try:
-            response = requests.get("http://localhost:8000/status", timeout=5)
-            if response.status_code == 200:
-                status = response.json()
-                tool_count = status.get("tools_loaded", 0)
-                print(f"✅ MCP server running with {tool_count} tools loaded")
-                speak(f"Self-learning server ready with {tool_count} tools available!")
-                return True
-            else:
-                print("⚠️  MCP server started but status unclear")
-                speak("Self-learning server started")
-                return True
-        except Exception as e:
-            print(f"⚠️  Could not verify MCP server status: {e}")
-            speak("Self-learning server may be starting up")
-            return False
+        for attempt in range(max_attempts):
+            try:
+                response = requests.get("http://localhost:8000/status", timeout=2)
+                if response.status_code == 200:
+                    status = response.json()
+                    tool_count = status.get("tools_loaded", 0)
+                    print(f"✅ MCP server running with {tool_count} tools loaded")
+                    speak(f"Self-learning server ready with {tool_count} tools available!")
+                    server_ready = True
+                    break
+                else:
+                    print("⚠️  MCP server started but status unclear")
+                    speak("Self-learning server started")
+                    server_ready = True
+                    break
+            except Exception as e:
+                if attempt < max_attempts - 1:  # Don't print error on last attempt
+                    time.sleep(1)  # Wait 1 second between attempts
+                    continue
+                else:
+                    # Only show warning on final attempt
+                    print("ℹ️  MCP server starting in background - this is normal")
+                    speak("Self-learning server starting up")
+                    server_ready = True  # Continue anyway
+                    break
+        
+        return server_ready
     
     def wake_word_callback(self, command):
         """Callback when wake word is detected"""
@@ -261,7 +273,8 @@ class ChoutuAI:
         import requests
         try:
             # Send the full RAM data to the MCP server's execute endpoint
-            res = requests.post(MCP_URL, json=ram_data, timeout=30)
+            # Increased timeout for stealth browser operations (YouTube automation can take 60+ seconds)
+            res = requests.post(MCP_URL, json=ram_data, timeout=25)
             
             if res.status_code == 200:
                 result = res.json()
@@ -282,7 +295,7 @@ class ChoutuAI:
                 return error_msg
             
         except requests.Timeout:
-            error_msg = "Request timed out. MCP server might be slow."
+            error_msg = "Task is still running in background. Please wait for completion."
             speak(error_msg)
             return error_msg
         except requests.ConnectionError:

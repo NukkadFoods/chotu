@@ -1170,21 +1170,24 @@ def handle_enhanced_web_browsing_followup(intent, context):
         return f"❌ Enhanced web browsing error: {e}"
 
 def handle_youtube_automation_command(intent):
-    """Handle YouTube automation commands using memory patterns"""
+    """Handle YouTube automation commands using session-aware system"""
     try:
         import os
         import json
         import re
         import subprocess
+        import sys
         
-        print(f"🎥 YouTube automation triggered for: '{intent}'")
+        print(f"🎥 SESSION-AWARE YouTube automation triggered for: '{intent}'")
         
-        # Check memory for YouTube patterns
+        # Add project paths for imports
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        sys.path.insert(0, project_root)
+        
+        # Check memory for YouTube patterns (keep existing memory system)
         memory_file = '/Users/mahendrabahubali/chotu/memory/web_learnings.json'
-        rom_file = '/Users/mahendrabahubali/chotu/memory/rom.json'
-        
-        # Load YouTube automation patterns from memory
         youtube_patterns = []
+        
         try:
             if os.path.exists(memory_file):
                 with open(memory_file, 'r') as f:
@@ -1196,155 +1199,99 @@ def handle_youtube_automation_command(intent):
         except Exception as e:
             print(f"⚠️ Could not load web learnings: {e}")
         
-        # Check if current command matches known patterns
-        intent_lower = intent.lower()
-        pattern_matched = False
-        
-        for pattern in youtube_patterns:
-            # Convert pattern to regex (replace * with .*)
-            pattern_regex = pattern.replace('*', '.*')
-            if re.search(pattern_regex, intent_lower):
-                pattern_matched = True
-                print(f"✅ Matched pattern: '{pattern}'")
-                break
-        
-        # Use enhanced YouTube automation with proper query extraction
+        # Try session-aware YouTube automation first
         try:
-            # Import enhanced YouTube automation functions with better path handling
-            import sys
-            import os
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            sys.path.append(project_root)
+            # Fix import paths for session-aware automation
+            tools_path = os.path.join(project_root, "mcp", "tools")
+            utils_path = os.path.join(project_root, "utils")
+            memory_path = os.path.join(project_root, "memory")
             
-            import sys
-            import os
-            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            from mcp.tools.web_automation_tool import _extract_youtube_query
-            from mcp.tools.enhanced_youtube_automation import enhanced_youtube_play
+            for path in [tools_path, utils_path, memory_path]:
+                if path not in sys.path:
+                    sys.path.insert(0, path)
             
-            # Extract search query using enhanced extraction
-            search_query = _extract_youtube_query(intent)
-            print(f"🎯 Enhanced query extraction: '{search_query}'")
+            # Import from the tools directory
+            import importlib.util
+            session_aware_path = os.path.join(tools_path, "session_aware_youtube.py")
             
-            # Use enhanced YouTube automation
-            print(f"🚀 Using enhanced YouTube automation with query: '{search_query}'")
-            result = enhanced_youtube_play(search_query, stop_current=True)
-            
-            if result.get('success'):
-                video_title = result.get('video_title', search_query)
-                return f"✅ Successfully played '{video_title}' on YouTube with enhanced automation"
-            else:
-                error_msg = result.get('error', 'Unknown error')
-                print(f"❌ Enhanced YouTube automation failed: {error_msg}")
-                # Fallback to old method
-                return handle_youtube_fallback_old_method(intent)
+            if os.path.exists(session_aware_path):
+                spec = importlib.util.spec_from_file_location("session_aware_youtube", session_aware_path)
+                session_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(session_module)
                 
+                print(f"🚀 Using session-aware YouTube automation with stealth browser")
+                result = session_module.session_aware_youtube_play(intent)
+                
+                if result.get('success'):
+                    video_title = result.get('video_title', 'video')
+                    context_enhanced = result.get('context_enhanced', False)
+                    final_query = result.get('final_query', intent)
+                    
+                    message = f"✅ Successfully played '{video_title}' on YouTube"
+                    if context_enhanced:
+                        message += f" (enhanced: '{final_query}')"
+                    message += " with stealth browser automation"
+                    
+                    return message
+                else:
+                    error_msg = result.get('error', 'Unknown error')
+                    print(f"❌ Session-aware automation failed: {error_msg}")
+                    
+                    # Fall back to enhanced automation
+                    return handle_youtube_enhanced_fallback(intent)
+            else:
+                print(f"❌ Session-aware YouTube file not found: {session_aware_path}")
+                return handle_youtube_enhanced_fallback(intent)
+                
+        except ImportError as e:
+            print(f"⚠️ Session-aware automation not available: {e}")
+            return handle_youtube_enhanced_fallback(intent)
         except Exception as e:
-            print(f"⚠️ Enhanced automation not available, using fallback: {e}")
-            return handle_youtube_fallback_old_method(intent)
+            print(f"⚠️ Session-aware automation error: {e}")
+            return handle_youtube_enhanced_fallback(intent)
             
     except Exception as e:
         print(f"❌ YouTube automation error: {e}")
         return f"❌ YouTube automation error: {e}"
 
-def handle_youtube_fallback_old_method(intent):
-    """Fallback to old YouTube automation method"""
-    
-    import re
-    import subprocess
-    
-    intent_lower = intent.lower()
-    
-    # Extract search query from command - improved patterns
-    search_query = ""
-    
-    # Enhanced pattern matching for different command types
-    search_patterns = [
-        r'(?:open youtube and play|play on youtube)\s+(.+)',           # "open youtube and play [song]" 
-        r'play\s+(.+?)\s+(?:on\s+)?youtube',                          # "play [song] on youtube"
-        r'search\s+(.+?)\s+on\s+youtube',                             # "search [query] on youtube"
-        r'youtube\s+search\s+(.+)',                                   # "youtube search [query]"
-        r'find\s+(.+?)\s+on\s+youtube',                               # "find [query] on youtube"
-        r'search\s+and\s+play\s+(.+?)\s+on\s+youtube',               # "search and play [song] on youtube"
-        r'(?:youtube|play)\s+(.+)',                                   # Generic "youtube [query]" or "play [query]"
-    ]
-    
-    for pattern in search_patterns:
-        match = re.search(pattern, intent_lower)
-        if match:
-            search_query = match.group(1).strip()
-            # Clean up common trailing words
-            search_query = re.sub(r'\s+(on\s+youtube|youtube)$', '', search_query)
-            print(f"� Extracted search query: '{search_query}'")
-            break
-    
-    # If no specific search query found, use the entire intent minus command words
-    if not search_query:
-        # Remove common command words but preserve content
-        cleaned = intent_lower
-        remove_words = ['open', 'youtube', 'and', 'play', 'search', 'find']
-        for word in remove_words:
-            cleaned = re.sub(r'\b' + word + r'\b', '', cleaned)
-        search_query = ' '.join(cleaned.split()).strip()
-        
-        # If still empty, use a sensible default
-        if not search_query or len(search_query) < 2:
-            search_query = "music"
-        
-        print(f"🎯 Cleaned search query: '{search_query}'")
-    
-    print(f"🎯 Final search query: '{search_query}'")
-    
-    # Execute YouTube automation
-    automation_script = '/Users/mahendrabahubali/chotu/chotu_youtube_player.py'
-    
-    if os.path.exists(automation_script):
-        print(f"🚀 Executing old YouTube automation with query: '{search_query}'")
-        
-        # Run the YouTube automation script
-        try:
-            result = subprocess.run([
-                'python3', automation_script, 
-                '--search', search_query,
-                '--headless', 'false'  # Show browser for debugging
-            ], capture_output=True, text=True, timeout=60)
-            
-            if result.returncode == 0:
-                print("✅ YouTube automation completed successfully")
-                return f"✅ Successfully played '{search_query}' on YouTube with ad-skipping enabled"
-            else:
-                print(f"❌ YouTube automation failed: {result.stderr}")
-                return f"❌ YouTube automation failed: {result.stderr}"
-                
-        except subprocess.TimeoutExpired:
-            return "⏰ YouTube automation timed out (60s)"
-        except Exception as e:
-            return f"❌ Error executing YouTube automation: {e}"
-    else:
-        print(f"❌ YouTube automation script not found: {automation_script}")
-        # Fallback: try to open YouTube in browser
-        return handle_youtube_fallback(search_query)
-
-def handle_youtube_fallback(search_query):
-    """Fallback YouTube handling when automation script is not available"""
+def handle_youtube_enhanced_fallback(intent):
+    """Fallback to enhanced YouTube automation - STEALTH BROWSER ONLY"""
     try:
-        import subprocess
-        import urllib.parse
+        # Fix import paths for enhanced automation
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        enhanced_path = os.path.join(project_root, "mcp", "tools", "enhanced_youtube_automation.py")
         
-        # Encode search query for URL
-        encoded_query = urllib.parse.quote(search_query)
-        youtube_url = f"https://www.youtube.com/results?search_query={encoded_query}"
-        
-        # Open YouTube in default browser
-        result = subprocess.run(['open', youtube_url], capture_output=True, text=True)
-        
-        if result.returncode == 0:
-            return f"✅ Opened YouTube search for '{search_query}' in browser"
+        if os.path.exists(enhanced_path):
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("enhanced_youtube_automation", enhanced_path)
+            enhanced_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(enhanced_module)
+            
+            print(f"� Using enhanced stealth browser automation (fallback)")
+            automation = enhanced_module.EnhancedYouTubeAutomation()
+            
+            result = automation.play_youtube_video(intent)
+            
+            if result.get('success'):
+                video_title = result.get('video_title', intent)
+                return f"✅ Successfully played '{video_title}' on YouTube with stealth browser (fallback)"
+            else:
+                error_msg = result.get('error', 'Unknown error')
+                return f"❌ Failed to play video on YouTube with stealth browser: {error_msg}"
         else:
-            return f"❌ Failed to open YouTube: {result.stderr}"
+            return f"❌ Enhanced automation file not found. YouTube command failed - stealth browser required."
             
     except Exception as e:
-        return f"❌ YouTube fallback error: {e}"
+        print(f"❌ Enhanced stealth automation failed: {e}")
+        return f"❌ All stealth browser methods failed. YouTube automation requires stealth browser. Error: {str(e)}"
+
+def handle_youtube_fallback_old_method(intent):
+    """DEPRECATED - this method has been replaced with stealth browser only"""
+    return f"❌ YouTube automation requires stealth browser. Regular browser methods are disabled."
+
+def handle_youtube_fallback(search_query):
+    """DEPRECATED - YouTube fallback now requires stealth browser only"""
+    return f"❌ YouTube automation requires stealth browser. Regular browser fallbacks are disabled. Query: '{search_query}'"
 
 @app.route('/health', methods=['GET'])
 def health_check():

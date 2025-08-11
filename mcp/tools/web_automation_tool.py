@@ -40,12 +40,25 @@ except ImportError:
                 from enhanced_youtube_automation import enhanced_youtube_play, enhanced_youtube_stop, enhanced_youtube_status, enhanced_youtube_close
                 WebAutomationCoordinator = None
                 ENHANCED_YOUTUBE_AVAILABLE = True
-                print("✅ Enhanced YouTube automation loaded via direct import (fixed version)")
-                print("⚠️ General web automation coordinator not available")
-            except ImportError as e:
-                print(f"⚠️ Web automation components not fully available: {e}")
-                WebAutomationCoordinator = None
-                ENHANCED_YOUTUBE_AVAILABLE = False
+                print("✅ Enhanced YouTube automation loaded via direct import")
+                print("ℹ️ General web automation coordinator not available")
+            except ImportError:
+                try:
+                    # Add path and try enhanced YouTube automation again
+                    import sys
+                    import os
+                    base_path = "/Users/mahendrabahubali/chotu"
+                    if f"{base_path}/mcp/tools" not in sys.path:
+                        sys.path.insert(0, f"{base_path}/mcp/tools")
+                    from enhanced_youtube_automation import enhanced_youtube_play, enhanced_youtube_stop, enhanced_youtube_status, enhanced_youtube_close
+                    WebAutomationCoordinator = None
+                    ENHANCED_YOUTUBE_AVAILABLE = True
+                    print("✅ Enhanced YouTube automation loaded via path fix")
+                    print("ℹ️ General web automation coordinator not available")
+                except ImportError:
+                    print("ℹ️ Enhanced YouTube automation not available - using fallback methods")
+                    WebAutomationCoordinator = None
+                    ENHANCED_YOUTUBE_AVAILABLE = False
 
 def web_automation_tool(command: str, headless: bool = False, context: Dict = None) -> Dict[str, Any]:
     """

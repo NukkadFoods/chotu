@@ -1,0 +1,26 @@
+[
+  {
+    "timestamp": "2025-08-10T23:28:22.281931",
+    "command": "open google.com",
+    "success": false,
+    "duration": 8.495189,
+    "error": null,
+    "steps_completed": 0
+  },
+  {
+    "timestamp": "2025-08-11T02:09:31.176607",
+    "command": "open example.com",
+    "success": false,
+    "duration": 3.969904,
+    "error": null,
+    "steps_completed": 0
+  },
+  {
+    "timestamp": "2025-08-11T02:12:19.843820",
+    "command": "open chrome and go to example.com",
+    "success": false,
+    "duration": 5.443265,
+    "error": null,
+    "steps_completed": 0
+  }
+]

@@ -1,0 +1,101 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-08-11T03:56:51.164757",
+  "tools": {
+    "enhanced_youtube_automation": {
+      "module": "mcp/tools/enhanced_youtube_automation.py",
+      "version": "2.1.0",
+      "category": "web_automation",
+      "dependencies": [
+        "selenium",
+        "chromedriver"
+      ],
+      "capabilities": [
+        "play_video",
+        "skip_ads",
+        "search_videos"
+      ],
+      "auto_generated": false,
+      "created_at": "2025-08-09T00:00:00",
+      "last_tested": "2025-08-11T00:00:00",
+      "success_rate": 95.5,
+      "usage_count": 142
+    },
+    "web_automation_tool": {
+      "module": "mcp/tools/web_automation_tool.py",
+      "version": "1.8.0",
+      "category": "web_automation",
+      "dependencies": [
+        "selenium",
+        "chromedriver"
+      ],
+      "capabilities": [
+        "browse_web",
+        "click_elements",
+        "fill_forms"
+      ],
+      "auto_generated": false,
+      "created_at": "2025-08-09T00:00:00",
+      "last_tested": "2025-08-11T00:00:00",
+      "success_rate": 88.2,
+      "usage_count": 67
+    },
+    "sqlite_database_tool": {
+      "module": "mcp/dynamic_tools/sqlite_database_tool.py",
+      "version": "1.0.0",
+      "category": "file_operations",
+      "dependencies": [
+        "sqlite3",
+        "json"
+      ],
+      "capabilities": [
+        "create_database",
+        "create_table",
+        "insert_data",
+        "query_data",
+        "update_data",
+        "delete_data",
+        "crud_operations"
+      ],
+      "auto_generated": true,
+      "created_at": "2025-08-11T04:00:00",
+      "last_tested": "2025-08-11T04:00:00",
+      "success_rate": 100.0,
+      "usage_count": 0
+    }
+  },
+  "categories": {
+    "web_automation": {
+      "total_tools": 2,
+      "success_rate": 91.85,
+      "last_updated": "2025-08-11T00:00:00"
+    },
+    "system_control": {
+      "total_tools": 0,
+      "success_rate": 0,
+      "last_updated": null
+    },
+    "file_operations": {
+      "total_tools": 1,
+      "success_rate": 100.0,
+      "last_updated": "2025-08-11T04:00:00"
+    }
+  },
+  "learning_stats": {
+    "total_generated_tools": 3,
+    "successful_generations": 1,
+    "failed_generations": 2,
+    "success_rate": 33.33,
+    "last_learning_session": "2025-08-11T03:56:51.164734",
+    "average_generation_time": 3.89,
+    "most_requested_category": "web_automation"
+  },
+  "system_health": {
+    "total_tools": 3,
+    "active_tools": 3,
+    "broken_tools": 0,
+    "last_health_check": "2025-08-11T04:00:00",
+    "memory_usage": "normal",
+    "disk_usage": "normal"
+  }
+}

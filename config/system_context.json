@@ -1,0 +1,70 @@
+{
+  "system_info": {
+    "os": "macOS",
+    "os_version": "14.0+",
+    "architecture": "Apple Silicon (M1/M2/M3)",
+    "python_version": "3.9+",
+    "shell": "zsh",
+    "terminal": "Terminal.app"
+  },
+  "available_tools": {
+    "system_commands": [
+      "networksetup -listallnetworkservices",
+      "networksetup -listpreferredwirelessnetworks",
+      "system_profiler SPBluetoothDataType",
+      "blueutil --paired",
+      "pmset -g batt",
+      "system_profiler SPDisplaysDataType",
+      "osascript -e 'tell application \"System Events\"'"
+    ],
+    "installed_packages": [
+      "subprocess",
+      "os",
+      "json",
+      "datetime",
+      "typing",
+      "tempfile",
+      "pathlib"
+    ],
+    "available_dependencies": [
+      "selenium",
+      "requests",
+      "beautifulsoup4",
+      "sqlite3",
+      "psutil"
+    ]
+  },
+  "chotu_capabilities": {
+    "existing_tools": [
+      "enhanced_youtube_automation",
+      "web_automation_tool", 
+      "sqlite_database_tool"
+    ],
+    "categories": [
+      "web_automation",
+      "file_operations",
+      "system_control"
+    ]
+  },
+  "code_requirements": {
+    "format": "raw_python_code_only",
+    "structure": "function_based_with_main_integration",
+    "error_handling": "comprehensive_try_catch",
+    "return_format": {
+      "status": "success|error",
+      "message": "human_readable_message",
+      "data": "optional_result_data"
+    }
+  },
+  "security_constraints": {
+    "allowed_commands": "system_info_only",
+    "forbidden_patterns": [
+      "rm -rf",
+      "sudo",
+      "eval()",
+      "exec()",
+      "shell=True"
+    ],
+    "safe_subprocess": "subprocess.run with shell=False"
+  }
+}

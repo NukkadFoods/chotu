@@ -1,14 +1,21 @@
-# 🤖 Chotu - Advanced AI Assistant
+# 🤖 CHOTU AI - Autonomous Learning Assistant
 
-Chotu is an intelligent, self-learning AI assistant built with advanced capabilities including voice recognition, web automation, system control, and autonomous learning features.
+**Revolutionary Schema-Driven AI System with Self-Learning Capabilities**
 
-## 🚀 Features
+## 🚀 **Core Features**
 
-### Core Capabilities
-- **🎙️ Voice Recognition**: Natural language processing with confidence scoring
-- **🌐 Web Automation**: YouTube video playing with smart ad-skipping
-- **🖥️ System Control**: Brightness, volume, Bluetooth, battery monitoring
-- **📱 App Management**: Launch applications, manage windows
+### 🧠 **Autonomous Learning**
+- **Schema-Driven Code Generation** - Uses comprehensive macOS system context
+- **Automatic Dependency Management** - Installs and tracks dependencies automatically  
+- **Real-Time Capability Expansion** - Learns new skills without human intervention
+- **Self-Documenting System** - Updates schema with new tools and capabilities
+
+### 🎯 **Advanced Capabilities**
+- **Voice Assistant** - Natural language processing with confidence assessment
+- **YouTube Automation** - Enhanced stealth browsing with ad-skipping
+- **System Monitoring** - Battery, CPU, memory, disk, and network monitoring
+- **Network Management** - WiFi scanning, Bluetooth control, network quality testing
+- **Web Automation** - Intelligent browser automation with human-like behavior
 - **🧠 Self-Learning**: Autonomous capability generation and improvement
 - **🛡️ Safety Features**: Multi-layer validation and security measures
 

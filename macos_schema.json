@@ -253,6 +253,30 @@
       ],
       "created": "2025-08-11 04:51:54",
       "status": "active"
+    },
+    "auto_generated_tool_8": {
+      "path": "/Users/mahendrabahubali/chotu/mcp/dynamic_tools/auto_generated_tool_8.py",
+      "capabilities": [
+        "list_wifi_networks",
+        "check_bluetooth_status",
+        "toggle_bluetooth",
+        "test_network_quality"
+      ],
+      "created": "2025-08-11 05:56:52",
+      "status": "active"
+    },
+    "auto_generated_tool_9": {
+      "path": "/Users/mahendrabahubali/chotu/mcp/dynamic_tools/auto_generated_tool_9.py",
+      "capabilities": [
+        "check_cpu_usage_and_temperature",
+        "check_memory_usage",
+        "check_disk_space",
+        "check_battery_status",
+        "list_running_processes",
+        "get_system_uptime_and_load"
+      ],
+      "created": "2025-08-11 05:57:56",
+      "status": "active"
     }
   }
 }

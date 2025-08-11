@@ -23,8 +23,18 @@ except ImportError:
         from stealth_browser import create_stealth_driver, stealth_browser
         STEALTH_AVAILABLE = True
     except ImportError:
-        STEALTH_AVAILABLE = False
-        print("⚠️ Stealth browser not available")
+        try:
+            # Add path and try again (fix for main Chotu loading)
+            import sys
+            import os
+            base_path = "/Users/mahendrabahubali/chotu"
+            if f"{base_path}/mcp/tools" not in sys.path:
+                sys.path.insert(0, f"{base_path}/mcp/tools")
+            from stealth_browser import create_stealth_driver, stealth_browser
+            STEALTH_AVAILABLE = True
+        except ImportError:
+            STEALTH_AVAILABLE = False
+            # Silently fail - stealth browser is optional
 
 class YouTubeSessionManager:
     """Manages persistent YouTube browser sessions"""

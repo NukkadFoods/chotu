@@ -35,12 +35,29 @@ class CodeAnalyzer:
         for file in os.listdir(tools_dir):
             if file.endswith('.py') and not file.startswith('__'):
                 module_name = file[:-3]
+                
+                # Skip test files and backup files to avoid import errors
+                if any(skip in module_name for skip in ['test_', '_test', '_backup', '.backup']):
+                    continue
+                
                 try:
                     spec = importlib.util.spec_from_file_location(
                         module_name, os.path.join(tools_dir, file)
                     )
+                    if spec is None or spec.loader is None:
+                        continue
+                        
                     module = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(module)
+                    
+                    # Add the tools directory to sys.path temporarily for relative imports
+                    import sys
+                    original_path = sys.path.copy()
+                    sys.path.insert(0, tools_dir)
+                    
+                    try:
+                        spec.loader.exec_module(module)
+                    finally:
+                        sys.path = original_path
                     
                     signatures = {}
                     for name, obj in inspect.getmembers(module):
@@ -60,8 +77,15 @@ class CodeAnalyzer:
                     
                     self.known_tools[module_name] = signatures
                     
-                except Exception as e:
+                except ImportError as e:
+                    # Skip modules with missing dependencies but don't show warning
+                    if "No module named" in str(e):
+                        continue
                     print(f"⚠️ Failed to analyze {module_name}: {e}")
+                except Exception as e:
+                    # Only show warnings for actual errors, not dependency issues
+                    if not any(err in str(e) for err in ["No module named", "cannot import", "ModuleNotFoundError"]):
+                        print(f"⚠️ Failed to analyze {module_name}: {e}")
         
         print(f"✅ Analyzed {len(self.known_tools)} tool modules")
     
@@ -240,12 +264,22 @@ Return detailed JSON analysis:
         user_goal = analysis.get('user_goal', '').lower()
         
         # Special case: If GPT says the capability already exists, trust it
+        # But be more precise about the matching - look for positive confirmations
         if any(phrase in missing_capability for phrase in [
-            'existing', 'capability can fulfill', 'already available', 'already exists',
-            'can fulfill this', 'currently has', 'include a function', 'includes a'
+            'capability can fulfill', 'already available', 'already exists',
+            'can fulfill this', 'currently has', 'include a function', 'includes a',
+            'capabilities already include', 'existing tools can handle'
         ]):
             print(f"🔍 GPT analysis indicates existing capability: {missing_capability}")
             return False  # No gap - GPT says we already have this
+        
+        # If GPT explicitly says we DON'T have the capability, that's a gap
+        if any(phrase in missing_capability for phrase in [
+            'do not include', 'does not include', 'capabilities do not', 'currently does not',
+            'not currently have', 'missing the capability', 'lacks the ability'
+        ]):
+            print(f"🔍 GPT analysis confirms capability gap: {missing_capability}")
+            return True  # Confirmed gap - GPT says we DON'T have this
         
         # Check for direct function name matches first
         intent_lower = intent.lower()
@@ -357,6 +391,52 @@ Return detailed JSON analysis:
             deps.extend([f"permission:{p}" for p in tech_reqs['requires_permissions']])
         
         return deps
+    
+    def _assess_risks(self, analysis: Dict) -> List[str]:
+        """Assess potential risks for implementing this capability"""
+        risks = []
+        
+        # Get complexity level
+        complexity = analysis.get('gap_analysis', {}).get('complexity_level', 'unknown')
+        if complexity in ['complex', 'expert']:
+            risks.append(f"High complexity implementation ({complexity} level)")
+        
+        # Check technical requirements
+        tech_reqs = analysis.get('technical_requirements', {})
+        
+        if tech_reqs.get('requires_external_tools'):
+            risks.append("Dependency on external tools/libraries")
+        
+        if tech_reqs.get('requires_permissions'):
+            for perm in tech_reqs['requires_permissions']:
+                if 'system' in perm.lower() or 'admin' in perm.lower():
+                    risks.append(f"Requires elevated permissions: {perm}")
+                elif 'file' in perm.lower():
+                    risks.append("File system access required")
+        
+        if tech_reqs.get('requires_apis'):
+            risks.append("Dependency on external APIs")
+        
+        # Check safety considerations
+        safety_items = analysis.get('safety_considerations', [])
+        for item in safety_items:
+            if any(keyword in item.lower() for keyword in ['security', 'unauthorized', 'data loss']):
+                risks.append(f"Security concern: {item}")
+        
+        # Check category-specific risks
+        category = analysis.get('intent_category', '')
+        if 'system_control' in category:
+            risks.append("System control operations can affect stability")
+        if 'file_operations' in category:
+            risks.append("File operations can cause data loss if not handled properly")
+        if 'web' in category:
+            risks.append("Web operations depend on external connectivity")
+        
+        # Default risk if none identified
+        if not risks:
+            risks.append("Standard implementation risks apply")
+        
+        return risks
     
     def analyze_tool_failure(self, tool_name: str, error_message: str, user_intent: str) -> Dict[str, Any]:
         """
@@ -532,9 +612,38 @@ Return detailed JSON analysis:
         return overlap >= match_threshold
     
     def _addresses_user_goal(self, user_goal: str, function_purpose: str) -> bool:
-        """Check if a function directly addresses the user's goal"""
+        """Check if a function directly addresses the user's goal with high precision"""
         goal = user_goal.lower().strip()
         purpose = function_purpose.lower().strip()
+        
+        # First check: Do they involve the same domain/technology?
+        # Only match if they're working with the same type of resource
+        goal_domains = set()
+        purpose_domains = set()
+        
+        domain_keywords = {
+            'database': ['database', 'db', 'sqlite', 'mysql', 'postgresql', 'sql'],
+            'file': ['file', 'document', 'txt', 'pdf', 'csv'],
+            'folder': ['folder', 'directory', 'dir'],
+            'web': ['web', 'browser', 'website', 'url', 'http'],
+            'email': ['email', 'mail', 'message'],
+            'system': ['system', 'process', 'service', 'application'],
+            'media': ['video', 'audio', 'music', 'sound', 'image']
+        }
+        
+        for domain, keywords in domain_keywords.items():
+            if any(keyword in goal for keyword in keywords):
+                goal_domains.add(domain)
+            if any(keyword in purpose for keyword in keywords):
+                purpose_domains.add(domain)
+        
+        # If they don't share any domain, they can't address the same goal
+        if goal_domains and purpose_domains and not goal_domains.intersection(purpose_domains):
+            return False
+        
+        # If goal has specific domains but purpose doesn't, they're not related
+        if goal_domains and not purpose_domains:
+            return False
         
         # Extract action verbs from user goal
         action_verbs = {
@@ -550,7 +659,7 @@ Return detailed JSON analysis:
         goal_actions = [word for word in goal.split() if word in action_verbs]
         purpose_actions = [word for word in purpose.split() if word in action_verbs]
         
-        # If they have the same primary action, check if the target is similar
+        # If they have the same primary action AND same domain, check similarity
         if goal_actions and purpose_actions:
             if goal_actions[0] == purpose_actions[0]:
                 # Same action - check if target is similar
