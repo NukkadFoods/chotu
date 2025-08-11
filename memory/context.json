@@ -98,7 +98,252 @@
       "chotu_response": "Task is still running in background. Please wait for completion.",
       "success": true,
       "session_id": 13
+    },
+    {
+      "timestamp": "2025-08-11T23:56:57.241731",
+      "user_input": "Set brightness to 80%",
+      "chotu_response": "\u2705 Brightness set to 80%",
+      "success": true,
+      "session_id": 14
+    },
+    {
+      "timestamp": "2025-08-11T23:56:57.242528",
+      "user_input": "Open Chrome browser",
+      "chotu_response": "\u2705 Chrome opened successfully",
+      "success": true,
+      "session_id": 15
+    },
+    {
+      "timestamp": "2025-08-11T23:56:57.242936",
+      "user_input": "What's the weather like?",
+      "chotu_response": "\u2705 Weather: Sunny, 72\u00b0F",
+      "success": true,
+      "session_id": 16
+    },
+    {
+      "timestamp": "2025-08-11T23:56:57.243314",
+      "user_input": "Show me system information",
+      "chotu_response": "\u2705 System info displayed",
+      "success": true,
+      "session_id": 17
+    },
+    {
+      "timestamp": "2025-08-12T00:09:46.569685",
+      "user_input": "set brightness to 80%",
+      "chotu_response": "\u2705 Brightness set to 80%",
+      "success": true,
+      "session_id": 18
+    },
+    {
+      "timestamp": "2025-08-12T00:09:46.571141",
+      "user_input": "open chrome browser",
+      "chotu_response": "\u2705 Chrome opened successfully",
+      "success": true,
+      "session_id": 19
+    },
+    {
+      "timestamp": "2025-08-12T00:09:46.572466",
+      "user_input": "search for python tutorials",
+      "chotu_response": "\u2705 Opened Google Chrome and searched for 'python tutorials'",
+      "success": true,
+      "session_id": 20
+    },
+    {
+      "timestamp": "2025-08-12T00:09:46.573329",
+      "user_input": "increase volume to 60%",
+      "chotu_response": "\u2705 Volume set to 60%",
+      "success": true,
+      "session_id": 21
+    },
+    {
+      "timestamp": "2025-08-12T00:09:46.575306",
+      "user_input": "play first search result",
+      "chotu_response": "\u2705 Clicked first search result",
+      "success": true,
+      "session_id": 22
+    },
+    {
+      "timestamp": "2025-08-12T00:15:59.811349",
+      "user_input": "set brightness to 70%",
+      "chotu_response": "\u2705 Brightness set to 70%",
+      "success": true,
+      "session_id": 23
+    },
+    {
+      "timestamp": "2025-08-12T00:15:59.812050",
+      "user_input": "open chrome browser",
+      "chotu_response": "\u2705 Chrome opened successfully",
+      "success": true,
+      "session_id": 24
+    },
+    {
+      "timestamp": "2025-08-12T00:15:59.813336",
+      "user_input": "search for python tutorials",
+      "chotu_response": "\u2705 Searched for python tutorials",
+      "success": true,
+      "session_id": 25
+    },
+    {
+      "timestamp": "2025-08-12T00:15:59.813899",
+      "user_input": "set volume to 60%",
+      "chotu_response": "\u2705 Volume set to 60%",
+      "success": true,
+      "session_id": 26
+    },
+    {
+      "timestamp": "2025-08-12T00:16:03.561833",
+      "user_input": "turn on bluetooth",
+      "chotu_response": "\u2705 Bluetooth enabled",
+      "success": true,
+      "session_id": 27
+    },
+    {
+      "timestamp": "2025-08-12T00:16:03.564888",
+      "user_input": "open safari",
+      "chotu_response": "\u2705 Safari opened",
+      "success": true,
+      "session_id": 28
+    },
+    {
+      "timestamp": "2025-08-12T00:16:03.566595",
+      "user_input": "increase brightness to 80%",
+      "chotu_response": "\u2705 Brightness set to 80%",
+      "success": true,
+      "session_id": 29
+    },
+    {
+      "timestamp": "2025-08-12T00:16:03.567107",
+      "user_input": "set volume to 50%",
+      "chotu_response": "\u2705 Volume set to 50%",
+      "success": true,
+      "session_id": 30
+    },
+    {
+      "timestamp": "2025-08-12T00:16:03.567941",
+      "user_input": "open terminal",
+      "chotu_response": "\u2705 Terminal opened",
+      "success": true,
+      "session_id": 31
+    },
+    {
+      "timestamp": "2025-08-12T00:16:18.686212",
+      "user_input": "open chrome",
+      "chotu_response": "\u2705 Chrome opened",
+      "success": true,
+      "session_id": 32
+    },
+    {
+      "timestamp": "2025-08-12T00:16:18.686889",
+      "user_input": "set brightness to 60%",
+      "chotu_response": "\u2705 Brightness set to 60%",
+      "success": true,
+      "session_id": 33
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.623691",
+      "user_input": "set brightness to 80%",
+      "chotu_response": "\u2705 Brightness set to 80%",
+      "success": true,
+      "session_id": 34
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.624447",
+      "user_input": "open chrome browser",
+      "chotu_response": "\u2705 Chrome opened successfully",
+      "success": true,
+      "session_id": 35
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.625914",
+      "user_input": "turn on bluetooth",
+      "chotu_response": "\u2705 Bluetooth enabled",
+      "success": true,
+      "session_id": 36
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.626528",
+      "user_input": "set volume to 60%",
+      "chotu_response": "\u2705 Volume set to 60%",
+      "success": true,
+      "session_id": 37
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.627113",
+      "user_input": "open safari",
+      "chotu_response": "\u2705 Safari opened",
+      "success": true,
+      "session_id": 38
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.627706",
+      "user_input": "enable wifi",
+      "chotu_response": "\u2705 WiFi enabled",
+      "success": true,
+      "session_id": 39
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.628416",
+      "user_input": "open terminal",
+      "chotu_response": "\u2705 Terminal opened",
+      "success": true,
+      "session_id": 40
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.630771",
+      "user_input": "increase brightness to 90%",
+      "chotu_response": "\u2705 Brightness set to 90%",
+      "success": true,
+      "session_id": 41
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.631478",
+      "user_input": "connect bluetooth device",
+      "chotu_response": "\u2705 Connected to AirPods",
+      "success": true,
+      "session_id": 42
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.634226",
+      "user_input": "open finder",
+      "chotu_response": "\u2705 Finder opened",
+      "success": true,
+      "session_id": 43
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.634978",
+      "user_input": "set volume to 70%",
+      "chotu_response": "\u2705 Volume set to 70%",
+      "success": true,
+      "session_id": 44
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.635714",
+      "user_input": "disable bluetooth",
+      "chotu_response": "\u2705 Bluetooth disabled",
+      "success": true,
+      "session_id": 45
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.636587",
+      "user_input": "close safari",
+      "chotu_response": "\u2705 Safari closed",
+      "success": true,
+      "session_id": 46
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.637281",
+      "user_input": "turn off wifi",
+      "chotu_response": "\u2705 WiFi disabled",
+      "success": true,
+      "session_id": 47
+    },
+    {
+      "timestamp": "2025-08-12T00:29:09.638041",
+      "user_input": "open youtube",
+      "chotu_response": "\u2705 YouTube opened in browser",
+      "success": true,
+      "session_id": 48
     }
   ],
-  "last_updated": "2025-08-11T08:47:35.807192"
+  "last_updated": "2025-08-12T00:29:09.638065"
 }

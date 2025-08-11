@@ -11,6 +11,8 @@ from utils.nlp_processor import NLPProcessor
 from utils.wake_word_detector import WakeWordDetector
 from memory.memory_manager import load_ram, save_ram, load_rom, save_rom
 from memory.context_manager import ContextManager
+from memory.intelligent_context_resolver import resolve_ambiguous_command, get_clarification_question
+from memory.context_validator import validate_context_resolution
 
 # MCP Server URL
 MCP_URL = "http://localhost:8000/execute"
@@ -120,6 +122,64 @@ class ChoutuAI:
     
     def process_command(self, user_input):
         """Process a user command with advanced NLP and context"""
+        
+        # STEP 1: Intelligent Context Resolution for Ambiguous Commands
+        context_resolution = resolve_ambiguous_command(user_input)
+        
+        if context_resolution['needs_clarification']:
+            # Ask for clarification if context is unclear
+            clarification = get_clarification_question(
+                context_resolution['alternatives'], 
+                user_input
+            )
+            speak(clarification)
+            print(f"🤔 Context unclear: {context_resolution['reasoning']}")
+            return
+        
+        # Use resolved command if context was successfully determined
+        if context_resolution['resolved'] and context_resolution['confidence'] >= 60:
+            resolved_input = context_resolution['resolved_command']
+            
+            # STEP 1.5: Validate if the resolved context actually makes logical sense
+            validation_result = validate_context_resolution(
+                user_input,
+                resolved_input,
+                context_resolution,
+                context_resolution.get('alternatives', [])
+            )
+            
+            print(f"🔍 Context Validation Results:")
+            print(f"   Original: '{user_input}' → Resolved: '{resolved_input}'")
+            print(f"   Valid: {validation_result['valid']}")
+            print(f"   Reasoning: {validation_result['reasoning']}")
+            
+            if validation_result['valid']:
+                # Context makes sense, use it
+                user_input = validation_result['final_command']
+                print(f"✅ Using validated command: '{user_input}'")
+                speak(f"I understand you want to {user_input}")
+                
+            elif validation_result['needs_clarification']:
+                # Context doesn't make sense, ask for clarification
+                clarification = validation_result.get('clarification_question', 
+                    f"I found '{resolved_input}' in recent context, but that doesn't make logical sense. What did you want me to do?")
+                
+                print(f"🤔 Logical validation failed: {validation_result['reasoning']}")
+                speak(clarification)
+                return
+                
+            else:
+                # Use the suggested action if available
+                if validation_result.get('suggested_action'):
+                    user_input = validation_result['suggested_action']
+                    print(f"🔧 Using suggested action: '{user_input}'")
+                    speak(f"I think you meant {user_input}")
+                else:
+                    print(f"❌ No valid interpretation found: {validation_result['reasoning']}")
+                    speak("I'm not sure what you want me to do. Could you be more specific?")
+                    return
+        
+        # STEP 2: Continue with enhanced NLP and context analysis
         # Analyze input with NLP
         nlp_context = self.nlp.generate_response_context(user_input)
         
@@ -132,12 +192,17 @@ class ChoutuAI:
             "timestamp": datetime.now().isoformat(),
             "nlp_analysis": nlp_context,
             "memory_context": memory_context,
-            "processing_mode": "advanced"
+            "context_resolution": context_resolution,
+            "processing_mode": "intelligent_context"
         }
         save_ram(ram)
         
         # Enhanced confidence calculation
         base_confidence = calculate_confidence(user_input)
+        
+        # Boost confidence based on successful context resolution
+        if context_resolution['resolved']:
+            base_confidence += context_resolution['confidence'] // 3  # Add up to 33 points
         
         # Boost confidence based on NLP analysis
         if nlp_context['intent'] != 'general':
@@ -150,7 +215,7 @@ class ChoutuAI:
         # Cap confidence at 100
         confidence = min(base_confidence, 100)
         
-        print(f"📊 Confidence: {confidence}% | Intent: {nlp_context['intent']} | Sentiment: {nlp_context['sentiment']}")
+        print(f"📊 Final Confidence: {confidence}% | Intent: {nlp_context['intent']} | Sentiment: {nlp_context['sentiment']}")
         
         # Process based on confidence and intent
         if confidence >= 85:
@@ -181,36 +246,47 @@ class ChoutuAI:
         """Handle medium confidence commands with GPT assistance"""
         print("🤔 Medium confidence. Using advanced GPT analysis.")
         
-        # Create enhanced prompt with NLP and context
+        # Create enhanced prompt with NLP and intelligent context resolution
+        context_info = ram.get('context_resolution', {})
+        
         gpt_prompt = f"""
-        You are Chotu, an advanced AI assistant like J.A.R.V.I.S. with strong conversational memory.
+        You are Chotu, an advanced AI assistant like J.A.R.V.I.S. with intelligent context resolution capabilities.
         
         Current User Command: '{ram['raw_input']}'
         NLP Analysis: {nlp_context}
         Extended Conversation Context (Last 9 Interactions): {ram['memory_context']}
         
-        CRITICAL CONTEXT ANALYSIS RULES:
-        1. ALWAYS analyze the last 9 conversation interactions before interpreting ambiguous commands
-        2. If user says "it" / "this" / "that" - scan the 9 recent interactions to find what they're referring to
-        3. Pay special attention to subjects mentioned in the conversation flow
-        4. "no [command]" means they want to correct/change the previous action
-        5. "decrease it" / "increase it" / "make it X" - determine what "it" refers to from the 9-interaction context
-        6. Look for patterns: if they recently discussed brightness, volume, apps, etc.
+        INTELLIGENT CONTEXT RESOLUTION RESULTS:
+        - Resolved Command: '{context_info.get('resolved_command', 'No resolution')}'
+        - Context Confidence: {context_info.get('confidence', 0)}%
+        - Context Source: {context_info.get('context_source', 'none')}
+        - Reasoning: {context_info.get('reasoning', 'No context reasoning available')}
         
-        ENHANCED CONTEXT EXAMPLES:
-        - If any of the 9 recent interactions mention "brightness" and user says "decrease it" → they mean "decrease brightness"
-        - If they recently set volume and say "increase it" → they mean "increase volume"  
-        - If they say "no, decrease it" after brightness command → they want to decrease brightness instead
-        - If they opened an app recently and say "close it" → they want to close that app
+        ENHANCED CONTEXT ANALYSIS WITH MULTI-LAYER MEMORY:
+        1. I have access to RAM (current session), ROM (long-term learned patterns), and 9 recent interactions
+        2. For ambiguous commands like "increase it", I check all memory layers to find what "it" refers to
+        3. I analyze conversation flow, recently mentioned subjects, and user patterns
+        4. I provide confidence scores and reasoning for context resolution
         
-        With access to 9 recent interactions, analyze the conversation flow carefully and respond in JSON format:
+        CONTEXT RESOLUTION EXAMPLES:
+        - If user recently discussed brightness and says "increase it" → "increase brightness"
+        - If they opened Chrome and say "close it" → "close chrome" 
+        - If they set volume to 50% and say "make it louder" → "increase volume"
+        - If context is unclear, I ask clarifying questions rather than guessing
+        
+        CRITICAL: Use the context resolution results above to inform your interpretation. 
+        If context resolution confidence is ≥60%, trust the resolved command.
+        If context resolution confidence is <60%, ask for clarification.
+        
+        Respond in JSON format:
         {{
-            "understood_intent": "specific action to take (e.g., 'decrease brightness by 10%')",
+            "understood_intent": "specific action to take based on context resolution",
             "confidence": 90,
-            "context_reasoning": "Based on the 9 recent interactions, I see user was discussing [subject] in interactions #X and #Y, so 'it' refers to [subject]",
+            "context_reasoning": "How I determined what the user meant using memory layers",
             "tools_needed": ["specific.tool.names"],
             "parameters": {{"key": "value"}},
-            "response_tone": "professional"
+            "response_tone": "professional",
+            "uses_context_resolution": true
         }}
         """
         

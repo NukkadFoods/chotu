@@ -16,6 +16,9 @@ from typing import Dict, List, Any, Optional
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from utils.gpt_interface import call_gpt_coding, call_gpt_learning
 
+# Import enhanced safety checker
+from .safety_checker import safety_checker
+
 class CodeGenerator:
     """Advanced code generation for autonomous capability development"""
     
@@ -283,9 +286,26 @@ Generate the complete tool code now:"""
         return code
     
     def _validate_generated_code(self, code: str) -> bool:
-        """Validate generated code for syntax and basic structure"""
+        """Validate generated code for syntax and basic structure with enhanced security"""
         try:
-            # Check syntax
+            # Enhanced security validation using multi-layer safety checker
+            safety_result = safety_checker.validate(code, {
+                'source': 'auto_generation',
+                'validation_type': 'comprehensive'
+            })
+            
+            if not safety_result['safe']:
+                print(f"❌ Security validation failed:")
+                for violation in safety_result['violations']:
+                    print(f"   • {violation}")
+                return False
+            
+            if safety_result['risk_level'] in ['high', 'medium']:
+                print(f"⚠️ High risk code detected (level: {safety_result['risk_level']})")
+                print(f"   Security score: {safety_result['security_score']}/100")
+                return False
+            
+            # Check syntax (redundant but keeps original functionality)
             ast.parse(code)
             
             # Check for required elements
@@ -301,7 +321,7 @@ Generate the complete tool code now:"""
                     print(f"❌ Missing required element: {element}")
                     return False
             
-            # Check for dangerous patterns
+            # Additional safety check - verify no banned patterns
             dangerous_patterns = [
                 'os.system(',
                 'eval(',
@@ -314,6 +334,7 @@ Generate the complete tool code now:"""
                     print(f"❌ Dangerous pattern detected: {pattern}")
                     return False
             
+            print(f"✅ Code validation passed (security score: {safety_result['security_score']}/100)")
             return True
             
         except SyntaxError as e:
