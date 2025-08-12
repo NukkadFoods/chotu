@@ -1,0 +1,10 @@
+{
+  "autonomous_mode": true,
+  "learning_mode": true,
+  "headless_mode": false,
+  "stealth_level": "normal",
+  "vision_confidence": 0.8,
+  "max_task_duration": 300,
+  "auto_confirm_credentials": false,
+  "screenshot_all_steps": true
+}

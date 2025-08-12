@@ -14,6 +14,15 @@ from memory.context_manager import ContextManager
 from memory.intelligent_context_resolver import resolve_ambiguous_command, get_clarification_question
 from memory.context_validator import validate_context_resolution
 
+# Import autonomous system
+try:
+    from chotu_autonomous import ChouAutonomous
+    AUTONOMOUS_AVAILABLE = True
+    print("🤖 Autonomous system loaded successfully!")
+except ImportError as e:
+    print(f"⚠️  Autonomous system not available: {e}")
+    AUTONOMOUS_AVAILABLE = False
+
 # MCP Server URL
 MCP_URL = "http://localhost:8000/execute"
 
@@ -28,8 +37,21 @@ class ChoutuAI:
         self.conversation_mode = False
         self.mcp_server_thread = None
         
+        # Initialize autonomous system if available
+        if AUTONOMOUS_AVAILABLE:
+            try:
+                self.autonomous_system = ChouAutonomous()
+                print("🤖 Autonomous task execution system initialized")
+            except Exception as e:
+                print(f"⚠️  Failed to initialize autonomous system: {e}")
+                self.autonomous_system = None
+        else:
+            self.autonomous_system = None
+        
         print("🤖 Chotu AI Agent initialized")
         print("🧠 Advanced features: NLP, Context Memory, Wake Word Detection")
+        if self.autonomous_system:
+            print("🦾 Autonomous task execution: ENABLED")
         
     def start_mcp_server(self):
         """Start the MCP server in background"""
@@ -105,6 +127,78 @@ class ChoutuAI:
         
         return server_ready
     
+    def is_autonomous_command(self, command):
+        """Check if the command should be handled by autonomous system"""
+        autonomous_keywords = [
+            'open chrome', 'open browser', 'start browser',
+            'navigate to', 'go to website', 'browse to', 'go to',
+            'click on', 'scroll down', 'scroll up',
+            'type', 'enter text', 'search for', 'search',
+            'fill form', 'submit form', 'download',
+            'take screenshot', 'automate', 'perform task',
+            'amazon.com', 'google.com', 'youtube.com',  # Common sites
+            'find on page', 'click button', 'fill field'
+        ]
+        
+        command_lower = command.lower()
+        
+        # Check for search patterns specifically
+        search_patterns = [
+            'search', 'find', 'look for', 'amazon.com', 'google.com',
+            'navigate', 'go to', 'browse', 'visit'
+        ]
+        
+        # If command contains search terms with a website, it's autonomous
+        if any(pattern in command_lower for pattern in search_patterns):
+            return True
+            
+        return any(keyword in command_lower for keyword in autonomous_keywords)
+    
+    def handle_autonomous_command(self, command):
+        """Handle command using autonomous system"""
+        if not self.autonomous_system:
+            speak("Autonomous system is not available")
+            return
+        
+        try:
+            print(f"🤖 Processing autonomous command: {command}")
+            speak("Executing autonomous task...")
+            
+            # Process the command through autonomous system using asyncio
+            import asyncio
+            
+            # Check if we're already in an event loop
+            try:
+                loop = asyncio.get_running_loop()
+                # We're in an event loop, need to run in a new thread
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future = executor.submit(asyncio.run, self.autonomous_system.process_user_input(command))
+                    result = future.result(timeout=30)  # 30 second timeout
+            except RuntimeError:
+                # No event loop running, we can use asyncio.run directly
+                result = asyncio.run(self.autonomous_system.process_user_input(command))
+            
+            # The autonomous system returns a string response, not a dict
+            if result and not result.startswith("❌"):
+                # Success - result contains the success message
+                speak("Task completed successfully")
+                print(f"✅ Autonomous task completed: {result}")
+                
+                # Add to context for future reference
+                self.context_manager.add_interaction(command, result, success=True)
+                
+            else:
+                # Error - result contains error message
+                error_msg = result if result else "Failed to execute autonomous task"
+                speak(f"Task failed: {error_msg}")
+                print(f"❌ Autonomous task failed: {error_msg}")
+                
+        except Exception as e:
+            error_msg = f"Autonomous system error: {str(e)}"
+            speak(error_msg)
+            print(f"❌ {error_msg}")
+    
     def wake_word_callback(self, command):
         """Callback when wake word is detected"""
         speak("Yes, I'm listening")
@@ -122,6 +216,11 @@ class ChoutuAI:
     
     def process_command(self, user_input):
         """Process a user command with advanced NLP and context"""
+        
+        # Check if this is an autonomous task command first
+        if self.autonomous_system and self.is_autonomous_command(user_input):
+            print("🤖 Detected autonomous task command")
+            return self.handle_autonomous_command(user_input)
         
         # STEP 1: Intelligent Context Resolution for Ambiguous Commands
         context_resolution = resolve_ambiguous_command(user_input)
@@ -476,7 +575,12 @@ class ChoutuAI:
         print("   • Dynamic tool generation")
         print("   • Self-learning capabilities")
         print("   • macOS system integration")
+        if self.autonomous_system:
+            print("   • Autonomous task execution with stealth browser")
+            print("   • Computer vision and automated interactions")
         print("\n💬 Say commands directly or 'exit' to quit")
+        if self.autonomous_system:
+            print("🤖 Try: 'open chrome', 'navigate to google.com', 'take screenshot'")
         
         # Start voice mode directly
         self.start_voice_mode()

@@ -72,3 +72,15 @@ loguru>=0.7.0
 
 # Security
 cryptography>=41.0.0
+
+# Autonomous Task Execution & Computer Vision
+pyautogui>=0.9.54
+opencv-python>=4.12.0
+mss>=10.0.0
+pycryptodome>=3.23.0
+keyring>=25.6.0
+
+# Stealth Browser Automation
+selenium-stealth>=1.0.6
+undetected-chromedriver>=3.5.5
+urllib3>=2.0.0

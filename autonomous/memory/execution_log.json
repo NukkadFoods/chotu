@@ -1,0 +1,582 @@
+[
+  {
+    "timestamp": "2025-08-12T05:29:27.406919",
+    "task_id": "task_1754956767_d02db0ba",
+    "task_name": "Open Chrome",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754956747",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": false,
+    "error_message": "Guided execution failed: 'AutonomousTaskExecutor' object has no attribute '_learn_chrome_task'",
+    "duration": 0.0006477832794189453,
+    "screenshots": []
+  },
+  {
+    "timestamp": "2025-08-12T06:15:56.103333",
+    "task_id": "exec_Open Chrome_1754959556",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754959556",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 0.0007688999176025391,
+    "screenshots": []
+  },
+  {
+    "timestamp": "2025-08-12T06:17:25.804698",
+    "task_id": "exec_Open Chrome_1754959645",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754959645",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 0.00019216537475585938,
+    "screenshots": []
+  },
+  {
+    "timestamp": "2025-08-12T06:19:51.529101",
+    "task_id": "exec_Open Chrome_1754959791",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754959772",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 0.00047588348388671875,
+    "screenshots": []
+  },
+  {
+    "timestamp": "2025-08-12T06:30:43.163266",
+    "task_id": "exec_Open Chrome_1754960436",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754960436",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": false,
+    "error_message": "Recipe execution failed: 'str' object has no attribute 'get'",
+    "duration": 6.752009868621826,
+    "screenshots": []
+  },
+  {
+    "timestamp": "2025-08-12T06:30:54.581496",
+    "task_id": "exec_Search Amazon_1754960448",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754960446",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": false,
+    "error_message": "Recipe execution failed: 'str' object has no attribute 'get'",
+    "duration": 6.398601055145264,
+    "screenshots": []
+  },
+  {
+    "timestamp": "2025-08-12T06:32:14.599415",
+    "task_id": "exec_Open Chrome_1754960509",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754960509",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": false,
+    "error_message": "Final verification failed: Stealth Chrome browser window visible",
+    "duration": 25.28434181213379,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T06:33:26.004790",
+    "task_id": "exec_Search Amazon_1754960539",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754960537",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": false,
+    "error_message": "Recipe execution failed: 'str' object has no attribute 'get'",
+    "duration": 66.36109972000122,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T06:38:00.125867",
+    "task_id": "exec_Open Chrome_1754960865",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754960865",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": false,
+    "error_message": "Final verification failed: Stealth Chrome browser window visible",
+    "duration": 14.562304973602295,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T06:39:06.751101",
+    "task_id": "exec_Search Amazon_1754960885",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754960883",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": false,
+    "error_message": "Final verification failed: Amazon search results page loaded",
+    "duration": 61.60217499732971,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png",
+      "autonomous/screenshots/step_4.png",
+      "autonomous/screenshots/step_5.png",
+      "autonomous/screenshots/step_6.png",
+      "autonomous/screenshots/step_7.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T06:42:45.352952",
+    "task_id": "exec_Open Chrome_1754961151",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754961151",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 14.0939462184906,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T06:44:49.758719",
+    "task_id": "exec_Search Amazon_1754961170",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754961168",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 119.37659907341003,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png",
+      "autonomous/screenshots/step_6.png",
+      "autonomous/screenshots/step_7.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T06:48:56.306024",
+    "task_id": "exec_Open Chrome_1754961526",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754961500",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 10.126872062683105,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T06:53:39.009687",
+    "task_id": "exec_Open Chrome_1754961810",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754961500",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 8.501756191253662,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T06:54:47.702065",
+    "task_id": "exec_Open Chrome_1754961872",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754961852",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 14.933168888092041,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:04:19.409869",
+    "task_id": "exec_Navigate to Website_1754962434",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754962434",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 24.927720069885254,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:05:31.625435",
+    "task_id": "exec_Navigate to Website_1754962503",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754962503",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 28.105037927627563,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:15:00.285139",
+    "task_id": "exec_Navigate to Website_1754963085",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754963065",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 14.35560417175293,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:15:19.677478",
+    "task_id": "exec_Navigate to Website_1754963111",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754963065",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": false,
+    "error_message": "Step failed: Navigate directly to the website",
+    "duration": 8.646403074264526,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:16:04.400727",
+    "task_id": "exec_Navigate to Website_1754963155",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754963065",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": false,
+    "error_message": "Step failed: Navigate directly to the website",
+    "duration": 9.299694061279297,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:24:04.011829",
+    "task_id": "exec_Open in New Tab_1754963615",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754963615",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 28.19641900062561,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png",
+      "autonomous/screenshots/step_4.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:24:29.415652",
+    "task_id": "exec_Navigate to Website_1754963644",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754963615",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 25.400965690612793,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:24:51.950983",
+    "task_id": "exec_Navigate to Website_1754963669",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754963615",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 22.53244113922119,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:36:17.103047",
+    "task_id": "exec_Navigate to Website_1754964348",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754964348",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 28.63373899459839,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:36:38.076932",
+    "task_id": "exec_Open in New Tab_1754964377",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754964348",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 20.96079111099243,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png",
+      "autonomous/screenshots/step_4.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:36:55.827648",
+    "task_id": "exec_Navigate to Website_1754964398",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754964348",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": false,
+    "error_message": "Final verification failed: page navigation completed",
+    "duration": 17.747936010360718,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:41:13.708161",
+    "task_id": "exec_Navigate to Website_1754964655",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754964624",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 17.849962949752808,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:52:21.575332",
+    "task_id": "exec_Navigate to Website_1754965319",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754965319",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 22.03115487098694,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T07:52:45.590513",
+    "task_id": "exec_Open in New Tab_1754965343",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754965319",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 22.0056049823761,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png",
+      "autonomous/screenshots/step_4.png"
+    ]
+  },
+  {
+    "timestamp": "2025-08-12T09:37:17.120281",
+    "task_id": "exec_Navigate to Website_1754971611",
+    "task_name": "Unknown",
+    "context": {
+      "user_id": "default_user",
+      "session_id": "session_1754971587",
+      "environment": "development",
+      "browser_profile": "stealth",
+      "stealth_level": "normal"
+    },
+    "success": true,
+    "error_message": "",
+    "duration": 25.869645833969116,
+    "screenshots": [
+      "autonomous/screenshots/step_1.png",
+      "autonomous/screenshots/step_2.png",
+      "autonomous/screenshots/step_3.png"
+    ]
+  }
+]

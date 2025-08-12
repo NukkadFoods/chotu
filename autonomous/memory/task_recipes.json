@@ -1,0 +1,606 @@
+{
+  "task_1754956767_d02db0ba": {
+    "task_name": "Open Chrome",
+    "trigger_phrases": [
+      "open chrome",
+      "open chrome"
+    ],
+    "description": "User requested: open chrome",
+    "prerequisites": [],
+    "action_sequence": [
+      {
+        "step_id": "task_1754956767_d02db0ba_step_1",
+        "action_type": "stealth_browser",
+        "target": "initialize_stealth_chrome",
+        "value": "start_stealth_browser",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Initialize stealth Chrome browser with undetected-chromedriver"
+      },
+      {
+        "step_id": "task_1754956767_d02db0ba_step_2",
+        "action_type": "browser_action",
+        "target": "navigate",
+        "value": "https://google.com",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Navigate to Google homepage"
+      },
+      {
+        "step_id": "task_1754956767_d02db0ba_step_3",
+        "action_type": "wait",
+        "target": "browser_ready",
+        "value": "2",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Wait for stealth browser to be fully ready"
+      }
+    ],
+    "credentials": {},
+    "success_indicators": [
+      "browser initialized successfully",
+      "navigation completed",
+      "no browser errors"
+    ],
+    "failure_handlers": [
+      "Retry stealth browser initialization",
+      "Check if ChromeDriver is available",
+      "Verify undetected-chromedriver installation"
+    ],
+    "created_at": "2025-08-12T05:29:27.406682",
+    "updated_at": "2025-08-12T06:25:00.000000",
+    "success_rate": 0.8,
+    "execution_count": 5,
+    "average_duration": 3.2,
+    "tags": [
+      "browser",
+      "stealth",
+      "automation",
+      "undetected"
+    ]
+  },
+  "task_amazon_search_123": {
+    "task_name": "Search Amazon",
+    "trigger_phrases": [
+      "search amazon",
+      "amazon.com",
+      "search on amazon",
+      "find on amazon",
+      "look on amazon"
+    ],
+    "description": "Search for products on Amazon using stealth browser",
+    "prerequisites": [
+      "stealth_browser_initialized"
+    ],
+    "action_sequence": [
+      {
+        "step_id": "task_amazon_search_123_step_1",
+        "action_type": "stealth_browser",
+        "target": "initialize_stealth_chrome",
+        "value": "start_stealth_browser",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Initialize stealth Chrome browser if not already active"
+      },
+      {
+        "step_id": "task_amazon_search_123_step_2",
+        "action_type": "browser_action",
+        "target": "navigate",
+        "value": "https://amazon.com",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Navigate to Amazon.com"
+      },
+      {
+        "step_id": "task_amazon_search_123_step_3",
+        "action_type": "wait",
+        "target": "page_load",
+        "value": "3",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Wait for Amazon page to load"
+      },
+      {
+        "step_id": "task_amazon_search_123_step_4",
+        "action_type": "click",
+        "target": "input[name='field-keywords']",
+        "value": "",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Click on Amazon search box"
+      },
+      {
+        "step_id": "task_amazon_search_123_step_5",
+        "action_type": "type",
+        "target": "input[name='field-keywords']",
+        "value": "{search_term}",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Type search term in search box"
+      },
+      {
+        "step_id": "task_amazon_search_123_step_6",
+        "action_type": "press_key",
+        "target": "Enter",
+        "value": "",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Press Enter to search"
+      },
+      {
+        "step_id": "task_amazon_search_123_step_7",
+        "action_type": "wait",
+        "target": "search_results",
+        "value": "3",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Wait for search results to load"
+      }
+    ],
+    "credentials": {},
+    "success_indicators": [
+      "search executed successfully",
+      "page navigation completed",
+      "no browser errors"
+    ],
+    "failure_handlers": [
+      "Retry search with different approach",
+      "Clear cookies and try again",
+      "Switch to mobile user agent"
+    ],
+    "created_at": "2025-08-12T06:30:00.000000",
+    "updated_at": "2025-08-12T06:30:00.000000",
+    "success_rate": 0.0,
+    "execution_count": 0,
+    "average_duration": 10.0,
+    "tags": [
+      "amazon",
+      "search",
+      "stealth",
+      "ecommerce"
+    ]
+  },
+  "task_new_tab_navigation": {
+    "task_name": "Open in New Tab",
+    "trigger_phrases": [
+      "on next tab",
+      "new tab",
+      "next tab",
+      "open in new tab"
+    ],
+    "description": "Open a website in a new browser tab",
+    "prerequisites": [
+      "stealth_browser_initialized"
+    ],
+    "action_sequence": [
+      {
+        "step_id": "task_new_tab_navigation_step_1",
+        "action_type": "stealth_browser",
+        "target": "initialize_stealth_chrome",
+        "value": "start_stealth_browser",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Ensure stealth Chrome browser is active"
+      },
+      {
+        "step_id": "task_new_tab_navigation_step_2",
+        "action_type": "browser_action",
+        "target": "new_tab",
+        "value": "",
+        "confirmation": null,
+        "timeout": 5,
+        "retry_count": 3,
+        "human_readable": "Open a new browser tab"
+      },
+      {
+        "step_id": "task_new_tab_navigation_step_3",
+        "action_type": "browser_action",
+        "target": "navigate",
+        "value": "https://{search_term}",
+        "confirmation": null,
+        "timeout": 15,
+        "retry_count": 3,
+        "human_readable": "Navigate to the website in the new tab"
+      },
+      {
+        "step_id": "task_new_tab_navigation_step_4",
+        "action_type": "wait",
+        "target": "page_load",
+        "value": "5",
+        "confirmation": null,
+        "timeout": 15,
+        "retry_count": 3,
+        "human_readable": "Wait for website to load in new tab"
+      }
+    ],
+    "credentials": {},
+    "success_indicators": [
+      "new tab opened successfully",
+      "website loaded successfully",
+      "no browser errors"
+    ],
+    "failure_handlers": [
+      "Try keyboard shortcut Cmd+T",
+      "Fall back to same tab navigation",
+      "Check browser permissions"
+    ],
+    "created_at": "2025-08-12T07:10:00.000000",
+    "updated_at": "2025-08-12T07:10:00.000000",
+    "success_rate": 0.0,
+    "execution_count": 0,
+    "average_duration": 10.0,
+    "tags": [
+      "browser",
+      "new tab",
+      "navigation",
+      "stealth"
+    ]
+  },
+  "task_youtube_search": {
+    "task_name": "YouTube Search",
+    "trigger_phrases": [
+      "search for on YouTube",
+      "search on YouTube",
+      "YouTube search",
+      "find on YouTube",
+      "look for on YouTube",
+      "search YouTube for"
+    ],
+    "description": "Search for videos on YouTube using the search functionality",
+    "prerequisites": [],
+    "action_sequence": [
+      {
+        "step_id": "task_youtube_search_step_1",
+        "action_type": "stealth_browser",
+        "target": "initialize_stealth_chrome",
+        "value": "start_stealth_browser",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Initialize stealth Chrome browser if not already active"
+      },
+      {
+        "step_id": "task_youtube_search_step_2",
+        "action_type": "browser_action",
+        "target": "navigate",
+        "value": "https://youtube.com",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Navigate to YouTube homepage"
+      },
+      {
+        "step_id": "task_youtube_search_step_3",
+        "action_type": "wait",
+        "target": "page_load",
+        "value": "3",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Wait for YouTube page to load"
+      },
+      {
+        "step_id": "task_youtube_search_step_4",
+        "action_type": "click",
+        "target": "input[name='search_query']",
+        "value": "",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Click on YouTube search box"
+      },
+      {
+        "step_id": "task_youtube_search_step_5",
+        "action_type": "type",
+        "target": "input[name='search_query']",
+        "value": "{search_term}",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Type search term in YouTube search box"
+      },
+      {
+        "step_id": "task_youtube_search_step_6",
+        "action_type": "press_key",
+        "target": "Enter",
+        "value": "",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Press Enter to search"
+      },
+      {
+        "step_id": "task_youtube_search_step_7",
+        "action_type": "wait",
+        "target": "search_results",
+        "value": "3",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Wait for YouTube search results to load"
+      }
+    ],
+    "credentials": {},
+    "success_indicators": [
+      "search executed successfully",
+      "search results loaded",
+      "no browser errors"
+    ],
+    "failure_handlers": [
+      "Try alternative search box selector",
+      "Clear search box and retry",
+      "Refresh page and try again"
+    ],
+    "created_at": "2025-08-12T07:45:00.000000",
+    "updated_at": "2025-08-12T07:45:00.000000",
+    "success_rate": 0.0,
+    "execution_count": 0,
+    "average_duration": 15.0,
+    "tags": [
+      "youtube",
+      "search",
+      "video",
+      "stealth"
+    ]
+  },
+  "task_login_website": {
+    "task_name": "Login to Website",
+    "trigger_phrases": [
+      "login to",
+      "sign in to",
+      "log into",
+      "access",
+      "open and login"
+    ],
+    "description": "Open website and automatically login using stored credentials",
+    "prerequisites": [],
+    "action_sequence": [
+      {
+        "step_id": "task_login_website_step_1",
+        "action_type": "stealth_browser",
+        "target": "initialize_stealth_chrome",
+        "value": "start_stealth_browser",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Initialize stealth Chrome browser"
+      },
+      {
+        "step_id": "task_login_website_step_2",
+        "action_type": "browser_action",
+        "target": "navigate",
+        "value": "https://{search_term}",
+        "confirmation": null,
+        "timeout": 15,
+        "retry_count": 3,
+        "human_readable": "Navigate to the website login page"
+      },
+      {
+        "step_id": "task_login_website_step_3",
+        "action_type": "wait",
+        "target": "page_load",
+        "value": "3",
+        "confirmation": null,
+        "timeout": 15,
+        "retry_count": 3,
+        "human_readable": "Wait for login page to load"
+      },
+      {
+        "step_id": "task_login_website_step_4",
+        "action_type": "auto_login",
+        "target": "{search_term}",
+        "value": "auto_credentials",
+        "confirmation": null,
+        "timeout": 20,
+        "retry_count": 2,
+        "human_readable": "Automatically fill and submit login credentials"
+      }
+    ],
+    "credentials": {},
+    "success_indicators": [
+      "login successful",
+      "dashboard accessed",
+      "user authenticated"
+    ],
+    "failure_handlers": [
+      "Prompt user for credentials",
+      "Try alternative login methods",
+      "Manual intervention required"
+    ],
+    "created_at": "2025-08-12T07:15:00.000000",
+    "updated_at": "2025-08-12T07:15:00.000000",
+    "success_rate": 0.0,
+    "execution_count": 0,
+    "average_duration": 15.0,
+    "tags": [
+      "login",
+      "authentication",
+      "credentials",
+      "stealth"
+    ]
+  },
+  "task_direct_website_navigation": {
+    "task_name": "Navigate to Website",
+    "trigger_phrases": [
+      "open chrome and search",
+      "navigate to",
+      "go to",
+      "visit",
+      "browse to",
+      "open"
+    ],
+    "description": "Open Chrome and navigate directly to a website URL",
+    "prerequisites": [],
+    "action_sequence": [
+      {
+        "step_id": "task_direct_website_navigation_step_1",
+        "action_type": "stealth_browser",
+        "target": "initialize_stealth_chrome",
+        "value": "start_stealth_browser",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Initialize stealth Chrome browser"
+      },
+      {
+        "step_id": "task_direct_website_navigation_step_2",
+        "action_type": "browser_action",
+        "target": "navigate",
+        "value": "https://{search_term}",
+        "confirmation": null,
+        "timeout": 15,
+        "retry_count": 3,
+        "human_readable": "Navigate directly to the website"
+      },
+      {
+        "step_id": "task_direct_website_navigation_step_3",
+        "action_type": "wait",
+        "target": "page_load",
+        "value": "5",
+        "confirmation": null,
+        "timeout": 15,
+        "retry_count": 3,
+        "human_readable": "Wait for website to load completely"
+      }
+    ],
+    "credentials": {},
+    "success_indicators": [
+      "website loaded successfully",
+      "page navigation completed",
+      "no browser errors"
+    ],
+    "failure_handlers": [
+      "Try with www prefix",
+      "Fall back to Google search",
+      "Check internet connection"
+    ],
+    "created_at": "2025-08-12T07:05:00.000000",
+    "updated_at": "2025-08-12T07:05:00.000000",
+    "success_rate": 0.0,
+    "execution_count": 0,
+    "average_duration": 8.0,
+    "tags": [
+      "browser",
+      "direct navigation",
+      "website",
+      "stealth"
+    ]
+  },
+  "task_generic_website_search": {
+    "task_name": "Search Website",
+    "trigger_phrases": [
+      "search for",
+      "find",
+      "look up",
+      "search"
+    ],
+    "description": "Open Chrome and search for terms on Google",
+    "prerequisites": [],
+    "action_sequence": [
+      {
+        "step_id": "task_generic_website_search_step_1",
+        "action_type": "stealth_browser",
+        "target": "initialize_stealth_chrome",
+        "value": "start_stealth_browser",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Initialize stealth Chrome browser"
+      },
+      {
+        "step_id": "task_generic_website_search_step_2",
+        "action_type": "browser_action",
+        "target": "navigate",
+        "value": "https://google.com",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Navigate to Google homepage"
+      },
+      {
+        "step_id": "task_generic_website_search_step_3",
+        "action_type": "wait",
+        "target": "page_load",
+        "value": "3",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Wait for Google page to load"
+      },
+      {
+        "step_id": "task_generic_website_search_step_4",
+        "action_type": "click",
+        "target": "input[name='q']",
+        "value": "",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Click on Google search box"
+      },
+      {
+        "step_id": "task_generic_website_search_step_5",
+        "action_type": "type",
+        "target": "input[name='q']",
+        "value": "{search_term}",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Type search term in Google search box"
+      },
+      {
+        "step_id": "task_generic_website_search_step_6",
+        "action_type": "press_key",
+        "target": "Enter",
+        "value": "",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Press Enter to search"
+      },
+      {
+        "step_id": "task_generic_website_search_step_7",
+        "action_type": "wait",
+        "target": "search_results",
+        "value": "3",
+        "confirmation": null,
+        "timeout": 10,
+        "retry_count": 3,
+        "human_readable": "Wait for search results to load"
+      }
+    ],
+    "credentials": {},
+    "success_indicators": [
+      "search executed successfully",
+      "page navigation completed",
+      "no browser errors"
+    ],
+    "failure_handlers": [
+      "Retry search with different approach",
+      "Clear cookies and try again",
+      "Use direct URL navigation if possible"
+    ],
+    "created_at": "2025-08-12T07:00:00.000000",
+    "updated_at": "2025-08-12T07:00:00.000000",
+    "success_rate": 0.0,
+    "execution_count": 0,
+    "average_duration": 12.0,
+    "tags": [
+      "browser",
+      "search",
+      "google",
+      "stealth",
+      "generic"
+    ]
+  }
+}

@@ -2,104 +2,6 @@
   "preferences": {},
   "session_history": [
     {
-      "timestamp": "2025-08-11T06:05:10.383185",
-      "user_input": "play Virat Kohli innings on YouTube",
-      "chotu_response": "Request timed out. MCP server might be slow.",
-      "success": true,
-      "session_id": 1
-    },
-    {
-      "timestamp": "2025-08-11T06:05:54.566420",
-      "user_input": "stop this video and play Rohit Sharma 1264",
-      "chotu_response": "Request timed out. MCP server might be slow.",
-      "success": true,
-      "session_id": 2
-    },
-    {
-      "timestamp": "2025-08-11T06:15:49.669060",
-      "user_input": "play Hanuman Chalisa Gulshan Grover on YouTube",
-      "chotu_response": "\u2705 Opened YouTube search for 'hanuman chalisa gulshan grover' in browser",
-      "success": true,
-      "session_id": 3
-    },
-    {
-      "timestamp": "2025-08-11T06:16:12.990389",
-      "user_input": "play the first search result",
-      "chotu_response": "\u2705 Opened YouTube search for 'the first search result' in browser",
-      "success": true,
-      "session_id": 4
-    },
-    {
-      "timestamp": "2025-08-11T06:42:28.817024",
-      "user_input": "what meaning on YouTube",
-      "chotu_response": "\u2705 Opened YouTube search for 'what meaning on' in browser",
-      "success": true,
-      "session_id": 5
-    },
-    {
-      "timestamp": "2025-08-11T06:43:05.450868",
-      "user_input": "you searched word meaning on on YouTube I am referring that Virat Kohli image",
-      "chotu_response": "\u2705 Opened YouTube search for 'i am referring that virat kohli image' in browser",
-      "success": true,
-      "session_id": 6
-    },
-    {
-      "timestamp": "2025-08-11T06:43:49.890857",
-      "user_input": "kitne Bechain Hoke on 12th Browser",
-      "chotu_response": "\u2705 Opened YouTube search for 'the song \"kitne bechain hoke\" on the 12th browser.' in browser",
-      "success": true,
-      "session_id": 7
-    },
-    {
-      "timestamp": "2025-08-11T08:33:10.758870",
-      "user_input": "list all the bluetooth devices",
-      "chotu_response": "\ud83d\udcf1 Bluetooth Devices:\n\ud83d\udfe2 Connected: None\n\n\ud83d\udd17 Paired:\naddress: 30-ba-e2-a9-e0-7a, not connected, not favourite, paired, name: \"Airdopes 131\", recent access date: 2025-08-11 03:02:26 +0000\naddress: 84-0f-2a-4c-b3-f9, not connected, not favourite, paired, name: \"OnePlus Buds Z2\", recent access date: 2025-08-11 03:02:26 +0000",
-      "success": true,
-      "session_id": 7
-    },
-    {
-      "timestamp": "2025-08-11T08:33:26.270487",
-      "user_input": "increase brightness to 70%",
-      "chotu_response": "\u2705 Brightness set to 70%",
-      "success": true,
-      "session_id": 8
-    },
-    {
-      "timestamp": "2025-08-11T08:33:42.241388",
-      "user_input": "Open Chrome and search tesla.com",
-      "chotu_response": "\u2705 Opened Google Chrome and searched for 'tesla.com' (fallback)",
-      "success": true,
-      "session_id": 9
-    },
-    {
-      "timestamp": "2025-08-11T08:34:08.048687",
-      "user_input": "open first link",
-      "chotu_response": "\u2705 \u2705 Used keyboard navigation for 'tesla.com'",
-      "success": true,
-      "session_id": 10
-    },
-    {
-      "timestamp": "2025-08-11T08:34:30.384725",
-      "user_input": "open first search link",
-      "chotu_response": "\u2705 \u2705 Used keyboard navigation for 'tesla.com'",
-      "success": true,
-      "session_id": 11
-    },
-    {
-      "timestamp": "2025-08-11T08:45:19.779333",
-      "user_input": "play Virat Kohli innings on YouTube",
-      "chotu_response": "\u2705 Successfully played 'Kohli's FIRST Test Century in England! | Edgbaston 2018 | England Cricket' on YouTube with stealth browser (fallback)",
-      "success": true,
-      "session_id": 12
-    },
-    {
-      "timestamp": "2025-08-11T08:47:35.807094",
-      "user_input": "stop it and play Rohit Sharma's 264",
-      "chotu_response": "Task is still running in background. Please wait for completion.",
-      "success": true,
-      "session_id": 13
-    },
-    {
       "timestamp": "2025-08-11T23:56:57.241731",
       "user_input": "Set brightness to 80%",
       "chotu_response": "\u2705 Brightness set to 80%",
@@ -343,7 +245,84 @@
       "chotu_response": "\u2705 YouTube opened in browser",
       "success": true,
       "session_id": 48
+    },
+    {
+      "timestamp": "2025-08-12T06:19:53.718803",
+      "user_input": "open Chrome",
+      "chotu_response": "\u2705 **Task Completed Successfully!**\n\n**Task:** open Chrome\n**Duration:** 0.00 seconds\n**Steps Completed:** 0/0\n",
+      "success": true,
+      "session_id": 45
+    },
+    {
+      "timestamp": "2025-08-12T06:21:03.395010",
+      "user_input": "turn bluetooth off",
+      "chotu_response": "\u2705 Bluetooth disabled",
+      "success": true,
+      "session_id": 46
+    },
+    {
+      "timestamp": "2025-08-12T06:21:22.278667",
+      "user_input": "turn bluetooth off",
+      "chotu_response": "\u2705 Bluetooth disabled",
+      "success": true,
+      "session_id": 47
+    },
+    {
+      "timestamp": "2025-08-12T06:48:58.427819",
+      "user_input": "Open Chrome and search amazon.com",
+      "chotu_response": "\u2705 **Task Completed Successfully!**\n\n**Task:** Open Chrome and search amazon.com\n**Duration:** 10.13 seconds\n**Steps Completed:** 3/3\n**Screenshots:** 3 captured\n",
+      "success": true,
+      "session_id": 45
+    },
+    {
+      "timestamp": "2025-08-12T06:53:41.148677",
+      "user_input": "open Chrome",
+      "chotu_response": "\u2705 **Task Completed Successfully!**\n\n**Task:** open Chrome\n**Duration:** 8.50 seconds\n**Steps Completed:** 3/3\n**Screenshots:** 3 captured\n",
+      "success": true,
+      "session_id": 46
+    },
+    {
+      "timestamp": "2025-08-12T06:54:49.843505",
+      "user_input": "Open Chrome and search flipkart.com",
+      "chotu_response": "\u2705 **Task Completed Successfully!**\n\n**Task:** Open Chrome and search flipkart.com\n**Duration:** 14.93 seconds\n**Steps Completed:** 3/3\n**Screenshots:** 3 captured\n",
+      "success": true,
+      "session_id": 47
+    },
+    {
+      "timestamp": "2025-08-12T07:15:02.455675",
+      "user_input": "Open Chrome and search instagram.com",
+      "chotu_response": "\u2705 **Task Completed Successfully!**\n\n**Task:** Open Chrome and search instagram.com\n**Duration:** 14.36 seconds\n**Steps Completed:** 3/3\n**Screenshots:** 3 captured\n",
+      "success": true,
+      "session_id": 48
+    },
+    {
+      "timestamp": "2025-08-12T07:41:15.842492",
+      "user_input": "Open Chrome and search youtube.com",
+      "chotu_response": "\u2705 **Task Completed Successfully!**\n\n**Task:** Open Chrome and search youtube.com\n**Duration:** 17.85 seconds\n**Steps Completed:** 3/3\n**Screenshots:** 3 captured\n",
+      "success": true,
+      "session_id": 49
+    },
+    {
+      "timestamp": "2025-08-12T07:41:35.091749",
+      "user_input": "in YouTube search box right Alka Yagnik songs",
+      "chotu_response": "\ud83e\udd16 I understand. Would you like me to help you with that task autonomously?",
+      "success": true,
+      "session_id": 50
+    },
+    {
+      "timestamp": "2025-08-12T07:42:35.938596",
+      "user_input": "search for Alka Yagnik songs on YouTube",
+      "chotu_response": "\ud83e\udd16 I understand. Would you like me to help you with that task autonomously?",
+      "success": true,
+      "session_id": 51
+    },
+    {
+      "timestamp": "2025-08-12T09:37:19.482817",
+      "user_input": "Open Chrome and search amazon.com",
+      "chotu_response": "\u2705 **Task Completed Successfully!**\n\n**Task:** Open Chrome and search amazon.com\n**Duration:** 25.87 seconds\n**Steps Completed:** 3/3\n**Screenshots:** 3 captured\n",
+      "success": true,
+      "session_id": 45
     }
   ],
-  "last_updated": "2025-08-12T00:29:09.638065"
+  "last_updated": "2025-08-12T09:37:19.482917"
 }
